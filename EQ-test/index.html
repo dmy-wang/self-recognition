@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>情商测试 | EQ-30</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #f59e0b;
+            --primary-light: #fbbf24;
+            --primary-dark: #d97706;
+            --secondary: #fef3c7;
+            --accent: #10b981;
+            --bg: #fffbeb;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, #f59e0b 0%, #fbbf24 50%, #10b981 100%);
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+        .container { max-width: 680px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 40px 20px; background: var(--gradient-primary); border-radius: 24px; color: white; margin-bottom: 30px; box-shadow: var(--shadow-lg); }
+        .header h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+        .progress-container { background: var(--card); border-radius: 20px; padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-lg); }
+        .progress-bar { height: 12px; background: var(--border); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--gradient-primary); border-radius: 10px; transition: width 0.5s ease; }
+        .progress-text { display: flex; justify-content: space-between; margin-top: 12px; font-size: 13px; color: var(--text-light); }
+        .question-card { background: var(--card); border-radius: 24px; padding: 32px; box-shadow: var(--shadow-lg); margin-bottom: 24px; }
+        .question-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+        .question-number { width: 40px; height: 40px; background: var(--gradient-primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
+        .question-text { font-size: 20px; font-weight: 500; line-height: 1.5; }
+        .options-container { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+        .option { padding: 16px 20px; background: var(--bg); border: 2px solid var(--border); border-radius: 14px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 12px; }
+        .option:hover { border-color: var(--primary); background: var(--secondary); }
+        .option.selected { border-color: var(--primary); background: var(--secondary); box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
+        .option-radio { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+        .option.selected .option-radio { border-color: var(--primary); background: var(--primary); }
+        .option.selected .option-radio::after { content: ''; width: 8px; height: 8px; background: white; border-radius: 50%; }
+        .option-label { font-size: 15px; }
+        .option-value { margin-left: auto; font-size: 13px; color: var(--text-light); font-weight: 500; }
+        .nav-buttons { display: flex; gap: 12px; margin-top: 24px; }
+        .btn { flex: 1; padding: 16px 24px; border-radius: 14px; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; }
+        .btn-primary { background: var(--gradient-primary); color: white; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: var(--bg); color: var(--text); border: 2px solid var(--border); }
+        .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .results-container, .welcome-container, .test-container { display: none; }
+        .welcome-container.active, .test-container.active, .results-container.active { display: block; }
+        .welcome-card { background: var(--card); border-radius: 24px; padding: 40px 32px; box-shadow: var(--shadow-lg); text-align: center; }
+        .welcome-icon { font-size: 72px; margin-bottom: 24px; }
+        .welcome-card h2 { font-size: 24px; margin-bottom: 16px; }
+        .welcome-card p { color: var(--text-light); font-size: 15px; margin-bottom: 24px; line-height: 1.8; }
+        .welcome-features { text-align: left; margin-bottom: 32px; }
+        .feature-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .feature-item:last-child { border-bottom: none; }
+        .feature-icon { font-size: 24px; }
+        .start-btn { width: 100%; padding: 18px; background: var(--gradient-primary); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3); }
+        .start-btn:hover { transform: translateY(-2px); }
+        .results-header { text-align: center; padding: 40px 24px; background: var(--gradient-primary); border-radius: 24px; color: white; margin-bottom: 30px; box-shadow: var(--shadow-lg); }
+        .results-header h2 { font-size: 28px; margin-bottom: 8px; }
+        .results-date { font-size: 13px; opacity: 0.8; margin-top: 8px; }
+        .eq-level-card { background: var(--card); border-radius: 24px; padding: 32px; box-shadow: var(--shadow-lg); margin-bottom: 24px; text-align: center; }
+        .eq-level-icon { font-size: 64px; margin-bottom: 16px; }
+        .eq-level-name { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+        .eq-level-score { font-size: 48px; font-weight: 700; margin: 16px 0; }
+        .eq-level-desc { font-size: 15px; color: var(--text-light); line-height: 1.8; }
+        .scores-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+        .score-card { background: var(--card); border-radius: 20px; padding: 24px; box-shadow: var(--shadow); text-align: center; }
+        .score-icon { font-size: 28px; margin-bottom: 8px; }
+        .score-label { font-size: 14px; color: var(--text-light); margin-bottom: 4px; }
+        .score-value { font-size: 28px; font-weight: 700; color: var(--primary); }
+        .score-bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 12px; overflow: hidden; }
+        .score-fill { height: 100%; background: var(--gradient-primary); border-radius: 3px; transition: width 0.5s ease; }
+        .analysis-section { background: var(--card); border-radius: 24px; padding: 28px; box-shadow: var(--shadow); margin-bottom: 24px; }
+        .analysis-section-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .dimension-card { background: var(--bg); border-radius: 16px; padding: 20px; margin-bottom: 16px; border-left: 4px solid var(--primary); }
+        .dimension-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .dimension-name { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+        .dimension-score { font-size: 18px; font-weight: 700; color: var(--primary); }
+        .dimension-desc { font-size: 14px; color: var(--text-light); line-height: 1.7; }
+        .tips-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .tip-item { padding: 16px; background: var(--bg); border-radius: 12px; font-size: 14px; border-left: 3px solid var(--accent); }
+        .action-buttons { display: flex; gap: 16px; margin-top: 28px; margin-bottom: 40px; }
+        .btn-outline { flex: 1; padding: 16px 24px; background: white; border: 2px solid var(--primary); color: var(--primary); border-radius: 12px; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
+        .btn-outline:hover { background: var(--secondary); }
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 600px) {
+            .container { padding: 12px; }
+            .header { padding: 30px 16px; border-radius: 20px; }
+            .header h1 { font-size: 22px; }
+            .question-card { padding: 24px 20px; border-radius: 20px; }
+            .question-text { font-size: 18px; }
+            .scores-grid, .tips-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 情商测试</h1>
+            <p>EQ-30 科学评估 · 约5分钟完成</p>
+        </div>
+
+        <div id="welcomeContainer" class="welcome-container active">
+            <div class="welcome-card">
+                <div class="welcome-icon">💡</div>
+                <h2>了解你的情绪智力</h2>
+                <p>情商(EQ)影响我们在生活和工作中的表现。通过30道题目，科学评估你的五个情绪智力维度。</p>
+                <div class="welcome-features">
+                    <div class="feature-item"><span class="feature-icon">🔍</span><span>自我觉察 - 识别和理解自己情绪</span></div>
+                    <div class="feature-item"><span class="feature-icon">⚖️</span><span>情绪管理 - 调节和控制情绪</span></div>
+                    <div class="feature-item"><span class="feature-icon">🔥</span><span>自我激励 - 驱动自己实现目标</span></div>
+                    <div class="feature-item"><span class="feature-icon">💝</span><span>同理心 - 理解他人情绪</span></div>
+                    <div class="feature-item"><span class="feature-icon">🤝</span><span>社交技巧 - 建立人际关系</span></div>
+                </div>
+                <button class="start-btn" onclick="startTest()">开始测试</button>
+            </div>
+        </div>
+
+        <div id="testContainer" class="test-container">
+            <div class="progress-container">
+                <div class="progress-bar"><div id="progressFill" class="progress-fill" style="width: 0%"></div></div>
+                <div class="progress-text"><span id="progressText">第 1 题 / 共 30 题</span><span id="progressPercent">0%</span></div>
+            </div>
+            <div id="questionCard" class="question-card fade-in">
+                <div class="question-header"><div id="questionNumber" class="question-number">Q1</div></div>
+                <div id="questionText" class="question-text"></div>
+                <div class="options-container">
+                    <div class="option" data-value="1" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">非常不同意</span><span class="option-value">1</span></div>
+                    <div class="option" data-value="2" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">不同意</span><span class="option-value">2</span></div>
+                    <div class="option" data-value="3" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">中立</span><span class="option-value">3</span></div>
+                    <div class="option" data-value="4" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">同意</span><span class="option-value">4</span></div>
+                    <div class="option" data-value="5" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">非常同意</span><span class="option-value">5</span></div>
+                </div>
+                <div class="nav-buttons">
+                    <button id="prevBtn" class="btn btn-secondary" onclick="prevQuestion()" disabled>上一题</button>
+                    <button id="nextBtn" class="btn btn-primary" onclick="nextQuestion()" disabled>下一题</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultsContainer" class="results-container"></div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        let currentQuestion = 0, answers = {};
+        const questions = QUESTIONS;
+
+        function startTest() {
+            document.getElementById('welcomeContainer').classList.remove('active');
+            document.getElementById('testContainer').classList.add('active');
+            currentQuestion = 0; answers = {};
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Q${currentQuestion + 1}`;
+            document.getElementById('questionText').textContent = q.text;
+            const progress = (currentQuestion / questions.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `第 ${currentQuestion + 1} 题 / 共 ${questions.length} 题`;
+            document.getElementById('progressPercent').textContent = `${Math.round(progress)}%`;
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            if (answers[currentQuestion] !== undefined) {
+                document.querySelector(`.option[data-value="${answers[currentQuestion]}"]`).classList.add('selected');
+                document.getElementById('nextBtn').disabled = false;
+            } else {
+                document.getElementById('nextBtn').disabled = true;
+            }
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? '查看结果' : '下一题';
+        }
+
+        function selectOption(element) {
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            answers[currentQuestion] = parseInt(element.dataset.value);
+            document.getElementById('nextBtn').disabled = false;
+            setTimeout(() => currentQuestion < questions.length - 1 ? nextQuestion() : calculateAndShowResults(), 300);
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) { currentQuestion++; renderQuestion(); }
+            else calculateAndShowResults();
+        }
+
+        function prevQuestion() { if (currentQuestion > 0) { currentQuestion--; renderQuestion(); } }
+
+        function calculateAndShowResults() {
+            const scores = { SA: 0, EM: 0, SM: 0, EP: 0, SS: 0 }, counts = { SA: 0, EM: 0, SM: 0, EP: 0, SS: 0 };
+            questions.forEach((q, i) => {
+                if (answers[i] !== undefined) {
+                    let score = answers[i];
+                    if (q.reverse) score = 6 - score;
+                    scores[q.dimension] += score;
+                    counts[q.dimension]++;
+                }
+            });
+            Object.keys(scores).forEach(dim => {
+                const maxScore = counts[dim] * 5, minScore = counts[dim] * 1;
+                scores[dim] = Math.round(((scores[dim] - minScore) / (maxScore - minScore)) * 100);
+            });
+            const totalScore = Math.round(Object.values(scores).reduce((a, b) => a + b, 0) / 5);
+            const date = new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+            localStorage.setItem('eq_history', JSON.stringify([{ date, scores, totalScore }, ...JSON.parse(localStorage.getItem('eq_history') || '[]')].slice(0, 10)));
+            showResults(scores, totalScore, date);
+        }
+
+        function showResults(scores, totalScore, date) {
+            document.getElementById('testContainer').classList.remove('active');
+            document.getElementById('resultsContainer').classList.add('active');
+            const eqLevel = getEQLevel(totalScore);
+            const dims = ['SA', 'EM', 'SM', 'EP', 'SS'];
+            const dimNames = { SA: '自我觉察', EM: '情绪管理', SM: '自我激励', EP: '同理心', SS: '社交技巧' };
+            
+            let html = `
+                <div class="results-header fade-in"><h2>🎉 测试完成！</h2><p>以下是你的情商分析报告</p><div class="results-date">测试时间：${date}</div></div>
+                <div class="eq-level-card fade-in"><div class="eq-level-icon">${eqLevel.emoji}</div><div class="eq-level-name" style="color: ${eqLevel.color}">${eqLevel.level}</div><div class="eq-level-score" style="color: ${eqLevel.color}">${totalScore}</div><div class="eq-level-desc">${eqLevel.desc}</div></div>
+                <div class="scores-grid fade-in">
+                    ${dims.map(dim => `<div class="score-card"><div class="score-icon">${DIMENSION_INFO[dim].icon}</div><div class="score-label">${dimNames[dim]}</div><div class="score-value">${scores[dim]}</div><div class="score-bar"><div class="score-fill" style="width: ${scores[dim]}%"></div></div></div>`).join('')}
+                </div>
+                <div class="analysis-section fade-in"><div class="analysis-section-title">📊 维度分析</div>
+                    ${dims.map(dim => {
+                        const level = scores[dim] >= 65 ? 'high' : scores[dim] >= 40 ? 'medium' : 'low';
+                        return `<div class="dimension-card"><div class="dimension-header"><span class="dimension-name">${DIMENSION_INFO[dim].icon} ${dimNames[dim]}</span><span class="dimension-score">${scores[dim]} · ${getPercentileDescription(getPercentile(scores[dim], dim))}</span></div><div class="dimension-desc">${ANALYSIS_CONTENT.dimensionAnalysis[dim][level]}</div></div>`;
+                    }).join('')}
+                </div>
+                <div class="analysis-section fade-in"><div class="analysis-section-title">💡 提升建议</div>
+                    <div class="tips-grid">${dims.map(dim => `<div class="tip-item"><strong>${dimNames[dim]}：</strong>${ANALYSIS_CONTENT.tips[dim][0]}</div>`).join('')}</div>
+                </div>
+                <div class="action-buttons"><button class="btn-outline" onclick="retakeTest()">重新测试</button><button class="btn-outline" onclick="shareResults()">分享结果</button></div>
+            `;
+            document.getElementById('resultsContainer').innerHTML = html;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function retakeTest() {
+            document.getElementById('resultsContainer').classList.remove('active');
+            document.getElementById('welcomeContainer').classList.add('active');
+            currentQuestion = 0; answers = {};
+        }
+
+        function shareResults() {
+            const text = '我刚完成了情商测试！来测测你的EQ吧~';
+            if (navigator.share) navigator.share({ title: '情商测试', text, url: location.href });
+            else navigator.clipboard.writeText(location.href).then(() => alert('链接已复制！'));
+        }
+    </script>
+</body>
+</html>

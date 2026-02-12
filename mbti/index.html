@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MBTI性格测试</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --secondary: #e0e7ff;
+            --accent: #ec4899;
+            --bg: #f5f3ff;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #ec4899 100%);
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+        .container { max-width: 680px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 40px 20px; background: var(--gradient-primary); border-radius: 24px; color: white; margin-bottom: 30px; box-shadow: var(--shadow-lg); }
+        .header h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+        .progress-container { background: var(--card); border-radius: 20px; padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-lg); }
+        .progress-bar { height: 12px; background: var(--border); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--gradient-primary); border-radius: 10px; transition: width 0.5s ease; }
+        .progress-text { display: flex; justify-content: space-between; margin-top: 12px; font-size: 13px; color: var(--text-light); }
+        .question-card { background: var(--card); border-radius: 24px; padding: 32px; box-shadow: var(--shadow-lg); margin-bottom: 24px; }
+        .question-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+        .question-number { width: 40px; height: 40px; background: var(--gradient-primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
+        .question-text { font-size: 20px; font-weight: 500; line-height: 1.5; }
+        .options-container { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+        .option { padding: 16px 20px; background: var(--bg); border: 2px solid var(--border); border-radius: 14px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 12px; }
+        .option:hover { border-color: var(--primary); background: var(--secondary); }
+        .option.selected { border-color: var(--primary); background: var(--secondary); box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2); }
+        .option-radio { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+        .option.selected .option-radio { border-color: var(--primary); background: var(--primary); }
+        .option.selected .option-radio::after { content: ''; width: 8px; height: 8px; background: white; border-radius: 50%; }
+        .option-label { font-size: 15px; }
+        .nav-buttons { display: flex; gap: 12px; margin-top: 24px; }
+        .btn { flex: 1; padding: 16px 24px; border-radius: 14px; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; }
+        .btn-primary { background: var(--gradient-primary); color: white; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: var(--bg); color: var(--text); border: 2px solid var(--border); }
+        .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .results-container, .welcome-container, .test-container { display: none; }
+        .welcome-container.active, .test-container.active, .results-container.active { display: block; }
+        .welcome-card { background: var(--card); border-radius: 24px; padding: 40px 32px; box-shadow: var(--shadow-lg); text-align: center; }
+        .welcome-icon { font-size: 72px; margin-bottom: 24px; }
+        .welcome-card h2 { font-size: 24px; margin-bottom: 16px; }
+        .welcome-card p { color: var(--text-light); font-size: 15px; margin-bottom: 24px; line-height: 1.8; }
+        .welcome-features { text-align: left; margin-bottom: 32px; }
+        .feature-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .feature-item:last-child { border-bottom: none; }
+        .feature-icon { font-size: 24px; }
+        .start-btn { width: 100%; padding: 18px; background: var(--gradient-primary); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3); }
+        .start-btn:hover { transform: translateY(-2px); }
+        .results-header { text-align: center; padding: 40px 24px; background: var(--gradient-primary); border-radius: 24px; color: white; margin-bottom: 30px; box-shadow: var(--shadow-lg); }
+        .results-header h2 { font-size: 28px; margin-bottom: 8px; }
+        .results-date { font-size: 13px; opacity: 0.8; margin-top: 8px; }
+        .type-card { background: var(--card); border-radius: 24px; padding: 40px 32px; box-shadow: var(--shadow-lg); margin-bottom: 24px; text-align: center; }
+        .type-icon { font-size: 80px; margin-bottom: 16px; }
+        .type-code { font-size: 36px; font-weight: 700; margin-bottom: 8px; letter-spacing: 4px; }
+        .type-name { font-size: 24px; font-weight: 600; margin-bottom: 8px; }
+        .type-nickname { font-size: 16px; color: var(--text-light); margin-bottom: 20px; }
+        .type-desc { font-size: 15px; color: var(--text-light); line-height: 1.8; text-align: left; }
+        .dimensions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+        .dimension-card { background: var(--card); border-radius: 20px; padding: 24px; box-shadow: var(--shadow); text-align: center; }
+        .dimension-icon { font-size: 28px; margin-bottom: 8px; }
+        .dimension-name { font-size: 13px; color: var(--text-light); margin-bottom: 8px; }
+        .dimension-result { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+        .dimension-bar { height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; position: relative; }
+        .dimension-bar::before { content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: var(--text-light); opacity: 0.3; }
+        .dimension-fill { height: 100%; border-radius: 4px; transition: width 0.5s ease; }
+        .dimension-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-light); margin-top: 4px; }
+        .analysis-section { background: var(--card); border-radius: 24px; padding: 28px; box-shadow: var(--shadow); margin-bottom: 24px; }
+        .analysis-section-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .strengths-list { display: flex; flex-wrap: wrap; gap: 10px; }
+        .strength-tag { padding: 10px 16px; background: var(--bg); border-radius: 12px; font-size: 14px; border: 1px solid var(--border); }
+        .career-text { font-size: 14px; color: var(--text-light); line-height: 1.7; }
+        .celebs-text { font-size: 14px; color: var(--text-light); }
+        .action-buttons { display: flex; gap: 16px; margin-top: 28px; margin-bottom: 40px; }
+        .btn-outline { flex: 1; padding: 16px 24px; background: white; border: 2px solid var(--primary); color: var(--primary); border-radius: 12px; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
+        .btn-outline:hover { background: var(--secondary); }
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 600px) {
+            .container { padding: 12px; }
+            .header { padding: 30px 16px; border-radius: 20px; }
+            .header h1 { font-size: 22px; }
+            .question-card { padding: 24px 20px; border-radius: 20px; }
+            .question-text { font-size: 18px; }
+            .dimensions-grid { grid-template-columns: 1fr; }
+            .type-code { font-size: 28px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧩 MBTI性格测试</h1>
+            <p>探索你的性格类型 · 约6分钟完成</p>
+        </div>
+
+        <div id="welcomeContainer" class="welcome-container active">
+            <div class="welcome-card">
+                <div class="welcome-icon">🎭</div>
+                <h2>发现你的性格密码</h2>
+                <p>MBTI是世界上最流行的性格测评工具之一，通过四个维度揭示你的性格偏好。</p>
+                <div class="welcome-features">
+                    <div class="feature-item"><span class="feature-icon">⚡</span><span>外向(E) vs 内向(I) - 能量来源</span></div>
+                    <div class="feature-item"><span class="feature-icon">🔍</span><span>感觉(S) vs 直觉(N) - 信息获取</span></div>
+                    <div class="feature-item"><span class="feature-icon">⚖️</span><span>思考(T) vs 情感(F) - 决策方式</span></div>
+                    <div class="feature-item"><span class="feature-icon">📋</span><span>判断(J) vs 知觉(P) - 生活态度</span></div>
+                </div>
+                <button class="start-btn" onclick="startTest()">开始测试</button>
+            </div>
+        </div>
+
+        <div id="testContainer" class="test-container">
+            <div class="progress-container">
+                <div class="progress-bar"><div id="progressFill" class="progress-fill" style="width: 0%"></div></div>
+                <div class="progress-text"><span id="progressText">第 1 题 / 共 32 题</span><span id="progressPercent">0%</span></div>
+            </div>
+            <div id="questionCard" class="question-card fade-in">
+                <div class="question-header"><div id="questionNumber" class="question-number">Q1</div></div>
+                <div id="questionText" class="question-text"></div>
+                <div class="options-container">
+                    <div class="option" data-value="1" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">非常不同意</span></div>
+                    <div class="option" data-value="2" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">不同意</span></div>
+                    <div class="option" data-value="3" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">中立</span></div>
+                    <div class="option" data-value="4" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">同意</span></div>
+                    <div class="option" data-value="5" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">非常同意</span></div>
+                </div>
+                <div class="nav-buttons">
+                    <button id="prevBtn" class="btn btn-secondary" onclick="prevQuestion()" disabled>上一题</button>
+                    <button id="nextBtn" class="btn btn-primary" onclick="nextQuestion()" disabled>下一题</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultsContainer" class="results-container"></div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        let currentQuestion = 0, answers = {};
+        const questions = QUESTIONS;
+
+        function startTest() {
+            document.getElementById('welcomeContainer').classList.remove('active');
+            document.getElementById('testContainer').classList.add('active');
+            currentQuestion = 0; answers = {};
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Q${currentQuestion + 1}`;
+            document.getElementById('questionText').textContent = q.text;
+            const progress = (currentQuestion / questions.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `第 ${currentQuestion + 1} 题 / 共 ${questions.length} 题`;
+            document.getElementById('progressPercent').textContent = `${Math.round(progress)}%`;
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            if (answers[currentQuestion] !== undefined) {
+                document.querySelector(`.option[data-value="${answers[currentQuestion]}"]`).classList.add('selected');
+                document.getElementById('nextBtn').disabled = false;
+            } else {
+                document.getElementById('nextBtn').disabled = true;
+            }
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? '查看结果' : '下一题';
+        }
+
+        function selectOption(element) {
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            answers[currentQuestion] = parseInt(element.dataset.value);
+            document.getElementById('nextBtn').disabled = false;
+            setTimeout(() => currentQuestion < questions.length - 1 ? nextQuestion() : calculateAndShowResults(), 300);
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) { currentQuestion++; renderQuestion(); }
+            else calculateAndShowResults();
+        }
+
+        function prevQuestion() { if (currentQuestion > 0) { currentQuestion--; renderQuestion(); } }
+
+        function calculateAndShowResults() {
+            const scores = { EI: 0, SN: 0, TF: 0, JP: 0 };
+            const counts = { EI: 0, SN: 0, TF: 0, JP: 0 };
+            
+            questions.forEach((q, i) => {
+                if (answers[i] !== undefined) {
+                    const value = answers[i];
+                    if (q.dimension === 'EI') {
+                        scores.EI += q.direction === 'E' ? value : 6 - value;
+                        counts.EI++;
+                    } else if (q.dimension === 'SN') {
+                        scores.SN += q.direction === 'N' ? value : 6 - value;
+                        counts.SN++;
+                    } else if (q.dimension === 'TF') {
+                        scores.TF += q.direction === 'F' ? value : 6 - value;
+                        counts.TF++;
+                    } else if (q.dimension === 'JP') {
+                        scores.JP += q.direction === 'J' ? value : 6 - value;
+                        counts.JP++;
+                    }
+                }
+            });
+
+            Object.keys(scores).forEach(dim => {
+                const maxScore = counts[dim] * 5, minScore = counts[dim] * 1;
+                scores[dim] = Math.round(((scores[dim] - minScore) / (maxScore - minScore)) * 100);
+            });
+
+            const mbtiType = getMBTIType(scores);
+            const date = new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+            localStorage.setItem('mbti_history', JSON.stringify([{ date, scores, mbtiType }, ...JSON.parse(localStorage.getItem('mbti_history') || '[]')].slice(0, 10)));
+            showResults(scores, mbtiType, date);
+        }
+
+        function showResults(scores, mbtiType, date) {
+            document.getElementById('testContainer').classList.remove('active');
+            document.getElementById('resultsContainer').classList.add('active');
+            const typeInfo = MBTI_TYPES[mbtiType];
+            
+            const dimLabels = {
+                EI: { left: '内向(I)', right: '外向(E)' },
+                SN: { left: '感觉(S)', right: '直觉(N)' },
+                TF: { left: '思考(T)', right: '情感(F)' },
+                JP: { left: '知觉(P)', right: '判断(J)' }
+            };
+
+            let html = `
+                <div class="results-header fade-in"><h2>🎉 测试完成！</h2><p>以下是你的MBTI性格分析报告</p><div class="results-date">测试时间：${date}</div></div>
+                <div class="type-card fade-in" style="border-top: 4px solid ${typeInfo.color}">
+                    <div class="type-icon">${typeInfo.emoji}</div>
+                    <div class="type-code" style="color: ${typeInfo.color}">${mbtiType}</div>
+                    <div class="type-name">${typeInfo.name}</div>
+                    <div class="type-nickname">${typeInfo.nickname}</div>
+                    <div class="type-desc">${typeInfo.desc}</div>
+                </div>
+                <div class="dimensions-grid fade-in">
+                    ${['EI', 'SN', 'TF', 'JP'].map(dim => `
+                        <div class="dimension-card">
+                            <div class="dimension-icon">${DIMENSION_INFO[dim].icon}</div>
+                            <div class="dimension-name">${DIMENSION_INFO[dim].name}</div>
+                            <div class="dimension-result">${getDimensionResult(scores, dim)}</div>
+                            <div class="dimension-bar">
+                                <div class="dimension-fill" style="width: ${scores[dim]}%; background: var(--gradient-primary);"></div>
+                            </div>
+                            <div class="dimension-labels"><span>${dimLabels[dim].left}</span><span>${dimLabels[dim].right}</span></div>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="analysis-section fade-in">
+                    <div class="analysis-section-title">💪 核心优势</div>
+                    <div class="strengths-list">${typeInfo.strengths.map(s => `<span class="strength-tag">${s}</span>`).join('')}</div>
+                </div>
+                <div class="analysis-section fade-in">
+                    <div class="analysis-section-title">💼 适合职业</div>
+                    <div class="career-text">${typeInfo.careers}</div>
+                </div>
+                <div class="analysis-section fade-in">
+                    <div class="analysis-section-title">⭐ 代表人物</div>
+                    <div class="celebs-text">${typeInfo.celebs}</div>
+                </div>
+                <div class="action-buttons"><button class="btn-outline" onclick="retakeTest()">重新测试</button><button class="btn-outline" onclick="shareResults()">分享结果</button></div>
+            `;
+            document.getElementById('resultsContainer').innerHTML = html;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function retakeTest() {
+            document.getElementById('resultsContainer').classList.remove('active');
+            document.getElementById('welcomeContainer').classList.add('active');
+            currentQuestion = 0; answers = {};
+        }
+
+        function shareResults() {
+            const text = '我刚完成了MBTI性格测试！来测测你的性格类型吧~';
+            if (navigator.share) navigator.share({ title: 'MBTI性格测试', text, url: location.href });
+            else navigator.clipboard.writeText(location.href).then(() => alert('链接已复制！'));
+        }
+    </script>
+</body>
+</html>

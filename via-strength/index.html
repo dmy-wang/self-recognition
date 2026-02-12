@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VIA性格优势测试</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #10b981;
+            --primary-light: #34d399;
+            --secondary: #d1fae5;
+            --accent: #8b5cf6;
+            --bg: #ecfdf5;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --gradient-primary: linear-gradient(135deg, #10b981 0%, #34d399 50%, #8b5cf6 100%);
+        }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; min-height: 100vh; }
+        .container { max-width: 680px; margin: 0 auto; padding: 20px; }
+        .header { text-align: center; padding: 40px 20px; background: var(--gradient-primary); border-radius: 24px; color: white; margin-bottom: 30px; box-shadow: var(--shadow-lg); }
+        .header h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+        .progress-container { background: var(--card); border-radius: 20px; padding: 24px; margin-bottom: 24px; box-shadow: var(--shadow-lg); }
+        .progress-bar { height: 12px; background: var(--border); border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--gradient-primary); border-radius: 10px; transition: width 0.5s ease; }
+        .progress-text { display: flex; justify-content: space-between; margin-top: 12px; font-size: 13px; color: var(--text-light); }
+        .question-card { background: var(--card); border-radius: 24px; padding: 32px; box-shadow: var(--shadow-lg); margin-bottom: 24px; }
+        .question-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+        .question-number { width: 40px; height: 40px; background: var(--gradient-primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; }
+        .question-text { font-size: 20px; font-weight: 500; line-height: 1.5; }
+        .options-container { display: flex; flex-direction: column; gap: 12px; margin-top: 24px; }
+        .option { padding: 16px 20px; background: var(--bg); border: 2px solid var(--border); border-radius: 14px; cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 12px; }
+        .option:hover { border-color: var(--primary); background: var(--secondary); }
+        .option.selected { border-color: var(--primary); background: var(--secondary); box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2); }
+        .option-radio { width: 22px; height: 22px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+        .option.selected .option-radio { border-color: var(--primary); background: var(--primary); }
+        .option.selected .option-radio::after { content: ''; width: 8px; height: 8px; background: white; border-radius: 50%; }
+        .option-label { font-size: 15px; }
+        .nav-buttons { display: flex; gap: 12px; margin-top: 24px; }
+        .btn { flex: 1; padding: 16px 24px; border-radius: 14px; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; border: none; }
+        .btn-primary { background: var(--gradient-primary); color: white; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+        .btn-primary:hover:not(:disabled) { transform: translateY(-2px); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-secondary { background: var(--bg); color: var(--text); border: 2px solid var(--border); }
+        .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+        .results-container, .welcome-container, .test-container { display: none; }
+        .welcome-container.active, .test-container.active, .results-container.active { display: block; }
+        .welcome-card { background: var(--card); border-radius: 24px; padding: 40px 32px; box-shadow: var(--shadow-lg); text-align: center; }
+        .welcome-icon { font-size: 72px; margin-bottom: 24px; }
+        .welcome-card h2 { font-size: 24px; margin-bottom: 16px; }
+        .welcome-card p { color: var(--text-light); font-size: 15px; margin-bottom: 24px; line-height: 1.8; }
+        .welcome-features { text-align: left; margin-bottom: 32px; }
+        .feature-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+        .feature-item:last-child { border-bottom: none; }
+        .feature-icon { font-size: 24px; }
+        .start-btn { width: 100%; padding: 18px; background: var(--gradient-primary); color: white; border: none; border-radius: 14px; font-size: 16px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+        .start-btn:hover { transform: translateY(-2px); }
+        .results-header { text-align: center; padding: 40px 24px; background: var(--gradient-primary); border-radius: 24px; color: white; margin-bottom: 30px; box-shadow: var(--shadow-lg); }
+        .results-header h2 { font-size: 28px; margin-bottom: 8px; }
+        .results-date { font-size: 13px; opacity: 0.8; margin-top: 8px; }
+        .top-strengths { background: var(--card); border-radius: 24px; padding: 32px; box-shadow: var(--shadow-lg); margin-bottom: 24px; }
+        .top-strengths-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; text-align: center; }
+        .strength-item { display: flex; align-items: center; gap: 16px; padding: 16px; background: var(--bg); border-radius: 16px; margin-bottom: 12px; border-left: 4px solid var(--primary); }
+        .strength-item:last-child { margin-bottom: 0; }
+        .strength-rank { width: 32px; height: 32px; background: var(--gradient-primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 14px; }
+        .strength-icon { font-size: 28px; }
+        .strength-info { flex: 1; }
+        .strength-name { font-size: 16px; font-weight: 600; }
+        .strength-english { font-size: 12px; color: var(--text-light); }
+        .strength-score { font-size: 20px; font-weight: 700; color: var(--primary); }
+        .virtue-section { background: var(--card); border-radius: 24px; padding: 28px; box-shadow: var(--shadow); margin-bottom: 24px; }
+        .virtue-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .virtue-icon { font-size: 28px; }
+        .virtue-title { font-size: 18px; font-weight: 600; }
+        .virtue-desc { font-size: 13px; color: var(--text-light); margin-bottom: 16px; }
+        .virtue-strengths { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+        .mini-strength { padding: 12px; background: var(--bg); border-radius: 12px; display: flex; align-items: center; gap: 8px; }
+        .mini-strength-icon { font-size: 20px; }
+        .mini-strength-info { flex: 1; }
+        .mini-strength-name { font-size: 13px; font-weight: 500; }
+        .mini-strength-score { font-size: 14px; font-weight: 600; color: var(--primary); }
+        .analysis-section { background: var(--card); border-radius: 24px; padding: 28px; box-shadow: var(--shadow); margin-bottom: 24px; }
+        .analysis-section-title { font-size: 18px; font-weight: 600; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+        .strength-detail { background: var(--bg); border-radius: 16px; padding: 20px; margin-bottom: 16px; }
+        .strength-detail:last-child { margin-bottom: 0; }
+        .strength-detail-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+        .strength-detail-icon { font-size: 32px; }
+        .strength-detail-name { font-size: 18px; font-weight: 600; }
+        .strength-detail-desc { font-size: 14px; color: var(--text-light); line-height: 1.7; }
+        .action-buttons { display: flex; gap: 16px; margin-top: 28px; margin-bottom: 40px; }
+        .btn-outline { flex: 1; padding: 16px 24px; background: white; border: 2px solid var(--primary); color: var(--primary); border-radius: 12px; font-size: 15px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
+        .btn-outline:hover { background: var(--secondary); }
+        .fade-in { animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @media (max-width: 600px) {
+            .container { padding: 12px; }
+            .header { padding: 30px 16px; border-radius: 20px; }
+            .header h1 { font-size: 22px; }
+            .question-card { padding: 24px 20px; border-radius: 20px; }
+            .question-text { font-size: 18px; }
+            .virtue-strengths { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌟 VIA性格优势测试</h1>
+            <p>发现你的核心优势 · 约7分钟完成</p>
+        </div>
+
+        <div id="welcomeContainer" class="welcome-container active">
+            <div class="welcome-card">
+                <div class="welcome-icon">💎</div>
+                <h2>发现你的性格优势</h2>
+                <p>VIA性格优势测试基于积极心理学研究，帮助你发现24种核心性格优势中的突出优势。</p>
+                <div class="welcome-features">
+                    <div class="feature-item"><span class="feature-icon">🧠</span><span>智慧 - 创造力、好奇心、学习、洞察力</span></div>
+                    <div class="feature-item"><span class="feature-icon">💪</span><span>勇气 - 勇敢、毅力、诚实、热情</span></div>
+                    <div class="feature-item"><span class="feature-icon">❤️</span><span>人道 - 善良、爱、公平、领导力</span></div>
+                    <div class="feature-item"><span class="feature-icon">⚖️</span><span>节制 - 宽恕、谦逊、谨慎、自律</span></div>
+                    <div class="feature-item"><span class="feature-icon">✨</span><span>超越 - 欣赏美、感恩、希望、幽默</span></div>
+                </div>
+                <button class="start-btn" onclick="startTest()">开始测试</button>
+            </div>
+        </div>
+
+        <div id="testContainer" class="test-container">
+            <div class="progress-container">
+                <div class="progress-bar"><div id="progressFill" class="progress-fill" style="width: 0%"></div></div>
+                <div class="progress-text"><span id="progressText">第 1 题 / 共 44 题</span><span id="progressPercent">0%</span></div>
+            </div>
+            <div id="questionCard" class="question-card fade-in">
+                <div class="question-header"><div id="questionNumber" class="question-number">Q1</div></div>
+                <div id="questionText" class="question-text"></div>
+                <div class="options-container">
+                    <div class="option" data-value="1" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">非常不同意</span></div>
+                    <div class="option" data-value="2" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">不同意</span></div>
+                    <div class="option" data-value="3" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">中立</span></div>
+                    <div class="option" data-value="4" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">同意</span></div>
+                    <div class="option" data-value="5" onclick="selectOption(this)"><div class="option-radio"></div><span class="option-label">非常同意</span></div>
+                </div>
+                <div class="nav-buttons">
+                    <button id="prevBtn" class="btn btn-secondary" onclick="prevQuestion()" disabled>上一题</button>
+                    <button id="nextBtn" class="btn btn-primary" onclick="nextQuestion()" disabled>下一题</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="resultsContainer" class="results-container"></div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        let currentQuestion = 0, answers = {};
+        const questions = QUESTIONS;
+
+        function startTest() {
+            document.getElementById('welcomeContainer').classList.remove('active');
+            document.getElementById('testContainer').classList.add('active');
+            currentQuestion = 0; answers = {};
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Q${currentQuestion + 1}`;
+            document.getElementById('questionText').textContent = q.text;
+            const progress = (currentQuestion / questions.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `第 ${currentQuestion + 1} 题 / 共 ${questions.length} 题`;
+            document.getElementById('progressPercent').textContent = `${Math.round(progress)}%`;
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            if (answers[currentQuestion] !== undefined) {
+                document.querySelector(`.option[data-value="${answers[currentQuestion]}"]`).classList.add('selected');
+                document.getElementById('nextBtn').disabled = false;
+            } else {
+                document.getElementById('nextBtn').disabled = true;
+            }
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? '查看结果' : '下一题';
+        }
+
+        function selectOption(element) {
+            document.querySelectorAll('.option').forEach(opt => opt.classList.remove('selected'));
+            element.classList.add('selected');
+            answers[currentQuestion] = parseInt(element.dataset.value);
+            document.getElementById('nextBtn').disabled = false;
+            setTimeout(() => currentQuestion < questions.length - 1 ? nextQuestion() : calculateAndShowResults(), 300);
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) { currentQuestion++; renderQuestion(); }
+            else calculateAndShowResults();
+        }
+
+        function prevQuestion() { if (currentQuestion > 0) { currentQuestion--; renderQuestion(); } }
+
+        function calculateAndShowResults() {
+            const scores = {};
+            const counts = {};
+            
+            questions.forEach((q, i) => {
+                if (answers[i] !== undefined) {
+                    if (!scores[q.dimension]) { scores[q.dimension] = 0; counts[q.dimension] = 0; }
+                    scores[q.dimension] += answers[i];
+                    counts[q.dimension]++;
+                }
+            });
+
+            Object.keys(scores).forEach(dim => {
+                const maxScore = counts[dim] * 5, minScore = counts[dim] * 1;
+                scores[dim] = Math.round(((scores[dim] - minScore) / (maxScore - minScore)) * 100);
+            });
+
+            const date = new Date().toLocaleString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' });
+            localStorage.setItem('via_history', JSON.stringify([{ date, scores }, ...JSON.parse(localStorage.getItem('via_history') || '[]')].slice(0, 10)));
+            showResults(scores, date);
+        }
+
+        function showResults(scores, date) {
+            document.getElementById('testContainer').classList.remove('active');
+            document.getElementById('resultsContainer').classList.add('active');
+            
+            const sortedStrengths = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+            const top5 = sortedStrengths.slice(0, 5);
+            
+            let html = `
+                <div class="results-header fade-in"><h2>🎉 测试完成！</h2><p>以下是你的性格优势分析报告</p><div class="results-date">测试时间：${date}</div></div>
+                <div class="top-strengths fade-in">
+                    <div class="top-strengths-title">🏆 你的核心优势 TOP 5</div>
+                    ${top5.map(([dim, score], i) => `
+                        <div class="strength-item">
+                            <div class="strength-rank">${i + 1}</div>
+                            <div class="strength-icon">${STRENGTHS_INFO[dim].icon}</div>
+                            <div class="strength-info">
+                                <div class="strength-name">${STRENGTHS_INFO[dim].name}</div>
+                                <div class="strength-english">${STRENGTHS_INFO[dim].english}</div>
+                            </div>
+                            <div class="strength-score">${score}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+
+            Object.entries(VIRTUES).forEach(([virtueName, virtueInfo]) => {
+                const virtueStrengths = virtueInfo.strengths.map(s => {
+                    const score = scores[s] || 50;
+                    return { dim: s, score, info: STRENGTHS_INFO[s] };
+                });
+                const avgScore = Math.round(virtueStrengths.reduce((a, b) => a + b.score, 0) / virtueStrengths.length);
+                
+                html += `
+                    <div class="virtue-section fade-in">
+                        <div class="virtue-header">
+                            <span class="virtue-icon">${virtueInfo.icon}</span>
+                            <span class="virtue-title" style="color: ${virtueInfo.color}">${virtueName}</span>
+                            <span style="margin-left: auto; font-weight: 600; color: ${virtueInfo.color}">${avgScore}</span>
+                        </div>
+                        <div class="virtue-desc">${virtueInfo.desc}</div>
+                        <div class="virtue-strengths">
+                            ${virtueStrengths.map(s => `
+                                <div class="mini-strength">
+                                    <span class="mini-strength-icon">${s.info.icon}</span>
+                                    <div class="mini-strength-info"><div class="mini-strength-name">${s.info.name}</div></div>
+                                    <span class="mini-strength-score">${s.score}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `
+                <div class="analysis-section fade-in">
+                    <div class="analysis-section-title">💡 核心优势解读</div>
+                    ${top5.slice(0, 3).map(([dim, score]) => {
+                        const level = getStrengthLevel(score);
+                        return `
+                            <div class="strength-detail">
+                                <div class="strength-detail-header">
+                                    <span class="strength-detail-icon">${STRENGTHS_INFO[dim].icon}</span>
+                                    <span class="strength-detail-name">${STRENGTHS_INFO[dim].name}</span>
+                                </div>
+                                <div class="strength-detail-desc">${STRENGTH_DESCRIPTIONS[dim][level]}</div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+                <div class="action-buttons"><button class="btn-outline" onclick="retakeTest()">重新测试</button><button class="btn-outline" onclick="shareResults()">分享结果</button></div>
+            `;
+
+            document.getElementById('resultsContainer').innerHTML = html;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function retakeTest() {
+            document.getElementById('resultsContainer').classList.remove('active');
+            document.getElementById('welcomeContainer').classList.add('active');
+            currentQuestion = 0; answers = {};
+        }
+
+        function shareResults() {
+            const text = '我刚完成了VIA性格优势测试！来发现你的核心优势吧~';
+            if (navigator.share) navigator.share({ title: 'VIA性格优势测试', text, url: location.href });
+            else navigator.clipboard.writeText(location.href).then(() => alert('链接已复制！'));
+        }
+    </script>
+</body>
+</html>
