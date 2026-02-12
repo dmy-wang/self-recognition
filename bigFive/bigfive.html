@@ -554,6 +554,31 @@
     </div>
 
     <script>
+        // ========== 密码验证 ==========
+        const ACCESS_PASSWORD = "test2024";  // 改成你想要的密码
+
+        (function() {
+            const saved = localStorage.getItem('personality_test_access');
+            if (saved === ACCESS_PASSWORD) return;
+            
+            const input = prompt('请输入访问密码：');
+            if (input === ACCESS_PASSWORD) {
+                localStorage.setItem('personality_test_access', input);
+            } else {
+                document.body.innerHTML = `
+                    <div style="display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;">
+                        <div style="text-align:center;padding:40px;">
+                            <h2 style="color:#333;">密码错误</h2>
+                            <p style="color:#666;">请联系卖家获取正确密码</p>
+                            <button onclick="location.reload()" style="margin-top:20px;padding:10px 20px;cursor:pointer;">重新输入</button>
+                        </div>
+                    </div>
+                `;
+                throw new Error('Access denied');
+            }
+        })();
+        // ========== 密码验证结束 ==========
+
         const questions = [
             { id: 1, text: "健谈的人", dimension: "E", reverse: false },
             { id: 2, text: "容易挑剔别人毛病的人", dimension: "A", reverse: true },
