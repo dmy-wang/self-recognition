@@ -175,6 +175,8 @@
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             position: relative;
             overflow: hidden;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
 
         .option::before {
@@ -187,17 +189,6 @@
             background: var(--gradient-primary);
             transform: scaleY(0);
             transition: transform 0.3s ease;
-        }
-
-        .option:hover {
-            background: linear-gradient(135deg, var(--secondary) 0%, #f5f3ff 100%);
-            border-color: var(--primary-light);
-            transform: translateX(8px);
-            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
-        }
-
-        .option:hover::before {
-            transform: scaleY(1);
         }
 
         @media (hover: hover) and (pointer: fine) {
@@ -1119,6 +1110,10 @@
             // Reset options
             document.querySelectorAll('.option').forEach(opt => {
                 opt.classList.remove('selected');
+                opt.style.background = '';
+                opt.style.borderColor = '';
+                opt.style.transform = '';
+                opt.style.boxShadow = '';
             });
             
             // Restore previous answer if exists
@@ -1142,6 +1137,9 @@
         function selectOption(element) {
             document.querySelectorAll('.option').forEach(opt => {
                 opt.classList.remove('selected');
+                opt.style.background = '';
+                opt.style.borderColor = '';
+                opt.style.transform = '';
             });
             element.classList.add('selected');
             answers[currentQuestion] = parseInt(element.dataset.value);
