@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>大五人格测试 | BFI-44</title>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -199,6 +200,25 @@
             transform: scaleY(1);
         }
 
+        @media (hover: hover) and (pointer: fine) {
+            .option:hover {
+                background: linear-gradient(135deg, var(--secondary) 0%, #f5f3ff 100%);
+                border-color: var(--primary-light);
+                transform: translateX(8px);
+                box-shadow: 0 4px 20px rgba(99, 102, 241, 0.15);
+            }
+            .option:hover::before {
+                transform: scaleY(1);
+            }
+            .option:hover .option-radio {
+                border-color: var(--primary-light);
+                transform: scale(1.1);
+            }
+            .option:hover .option-text {
+                color: var(--primary);
+            }
+        }
+
         .option.selected {
             background: linear-gradient(135deg, var(--secondary) 0%, #f5f3ff 100%);
             border-color: var(--primary);
@@ -222,11 +242,6 @@
             transition: all 0.3s ease;
             background: white;
             flex-shrink: 0;
-        }
-
-        .option:hover .option-radio {
-            border-color: var(--primary-light);
-            transform: scale(1.1);
         }
 
         .option.selected .option-radio {
@@ -256,10 +271,6 @@
             font-weight: 500;
             color: var(--text);
             transition: color 0.3s ease;
-        }
-
-        .option:hover .option-text {
-            color: var(--primary);
         }
 
         .nav-buttons {
@@ -1245,8 +1256,11 @@
             }
             return '';
         }
-
+        let _currentScores = null;
+        let _currentDate = null;
         function showResults(scores, date) {
+            _currentScores = scores;
+            _currentDate = date;
             document.getElementById('testContainer').style.display = 'none';
             document.getElementById('welcomeContainer').style.display = 'none';
             document.getElementById('resultsContainer').style.display = 'block';
@@ -1352,6 +1366,8 @@
                         </div>
                     </div>
                 </div>
+                
+                <div id="captureEnd"></div>
             `;
             
             // 详细维度分析
@@ -1401,7 +1417,7 @@
             html += `
                 <div class="action-buttons">
                     <button class="btn-outline" onclick="retakeTest()">重新测试</button>
-                    <button class="btn-outline" onclick="shareResults()">分享结果</button>
+                    <button class="btn-outline" onclick="shareResults()">保存图片</button>
                 </div>
             `;
             
@@ -1644,26 +1660,67 @@
             return weaknesses.slice(0, 3).map(w => `<li>${w}</li>`).join('');
         }
 
+        function shareResults() {
+            const resultsContainer = document.getElementById('resultsContainer');
+            const captureEnd = document.getElementById('captureEnd');
+            const buttons = resultsContainer.querySelector('.action-buttons');
+            if (buttons) buttons.style.display = 'none';
+            
+            const captureDiv = document.createElement('div');
+            captureDiv.id = 'captureArea';
+            captureDiv.style.cssText = 'background: #ffffff; padding: 20px;';
+            
+            const children = [];
+            let foundEnd = false;
+            resultsContainer.childNodes.forEach(child => {
+                if (child.id === 'captureEnd') {
+                    foundEnd = true;
+                }
+                if (!foundEnd && child.nodeType === 1) {
+                    children.push(child.cloneNode(true));
+                }
+            });
+            children.forEach(child => captureDiv.appendChild(child));
+            resultsContainer.insertBefore(captureDiv, resultsContainer.firstChild);
+            
+            html2canvas(captureDiv, {
+                scale: 1.5,
+                useCORS: true,
+                backgroundColor: '#ffffff',
+                scrollX: 0,
+                scrollY: 0,
+                logging: false,
+                onclone: function(clonedDoc) {
+                    const clonedCapture = clonedDoc.getElementById('captureArea');
+                    if (clonedCapture) {
+                        clonedCapture.style.background = '#ffffff';
+                        const textElements = clonedCapture.querySelectorAll('.dimension-desc, .analysis-detail-content, .advice-content, .summary-card-main p, .analysis-card-content, .dimension-percentile');
+                        textElements.forEach(el => {
+                            el.style.color = '#1e293b';
+                        });
+                    }
+                }
+            }).then(canvas => {
+                resultsContainer.removeChild(captureDiv);
+                if (buttons) buttons.style.display = 'flex';
+                
+                const link = document.createElement('a');
+                link.download = '大五人格测试结果_' + new Date().toLocaleDateString('zh-CN').replace(/\//g, '-') + '.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }).catch(err => {
+                if (captureDiv.parentNode) resultsContainer.removeChild(captureDiv);
+                if (buttons) buttons.style.display = 'flex';
+                alert('保存图片失败，请尝试截图保存');
+                console.error(err);
+            });
+        }
+
         function retakeTest() {
             document.getElementById('resultsContainer').style.display = 'none';
             document.getElementById('welcomeContainer').style.display = 'block';
             loadHistory();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function shareResults() {
-            const text = '我刚完成了大五人格测试，来测测你的人格特质吧！';
-            if (navigator.share) {
-                navigator.share({
-                    title: '大五人格测试',
-                    text: text,
-                    url: window.location.href
-                });
-            } else {
-                navigator.clipboard.writeText(text + ' ' + window.location.href).then(() => {
-                    alert('链接已复制到剪贴板！');
-                });
-            }
         }
 
         // Initialize
