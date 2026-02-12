@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大五人格测试 | BFI-44</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ff2442;
+            --primary-light: #ff6b81;
+            --secondary: #ffeef0;
+            --bg: #fafafa;
+            --card: #ffffff;
+            --text: #333333;
+            --text-light: #666666;
+            --border: #f0f0f0;
+            --shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 0 0 30px 30px;
+            color: white;
+            margin: -20px -20px 30px -20px;
+        }
+
+        .header h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+
+        .progress-container {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .question-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .question-number {
+            display: inline-block;
+            background: var(--secondary);
+            color: var(--primary);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+
+        .question-text {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            line-height: 1.5;
+        }
+
+        .question-prefix {
+            color: var(--text-light);
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            padding: 16px 20px;
+            background: var(--bg);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option:hover {
+            background: var(--secondary);
+            border-color: var(--primary-light);
+        }
+
+        .option.selected {
+            background: var(--secondary);
+            border-color: var(--primary);
+        }
+
+        .option-radio {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #ddd;
+            border-radius: 50%;
+            margin-right: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .option.selected .option-radio {
+            border-color: var(--primary);
+            background: var(--primary);
+        }
+
+        .option.selected .option-radio::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .option-text { font-size: 15px; }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px 24px;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary {
+            background: var(--border);
+            color: var(--text-light);
+        }
+
+        .btn-secondary:hover { background: #e5e5e5; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(255, 36, 66, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .results-header {
+            text-align: center;
+            padding: 30px;
+            background: var(--card);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .results-header h2 { font-size: 24px; margin-bottom: 8px; }
+        .results-header p { color: var(--text-light); font-size: 14px; }
+        .results-date { font-size: 12px; color: var(--text-light); margin-top: 12px; }
+
+        .dimension-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
+        }
+
+        .dimension-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .dimension-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-right: 14px;
+        }
+
+        .dimension-icon.O { background: #e8f5e9; }
+        .dimension-icon.C { background: #fff3e0; }
+        .dimension-icon.E { background: #fce4ec; }
+        .dimension-icon.A { background: #e3f2fd; }
+        .dimension-icon.N { background: #f3e5f5; }
+
+        .dimension-title h3 { font-size: 18px; margin-bottom: 2px; }
+        .dimension-title span { font-size: 13px; color: var(--text-light); }
+
+        .dimension-score { margin-left: auto; text-align: right; }
+        .score-value { font-size: 28px; font-weight: 600; color: var(--primary); }
+        .score-label { font-size: 12px; color: var(--text-light); }
+
+        .score-bar {
+            height: 10px;
+            background: var(--border);
+            border-radius: 5px;
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            border-radius: 5px;
+            transition: width 0.5s ease;
+        }
+
+        .score-fill.O { background: linear-gradient(90deg, #66bb6a, #43a047); }
+        .score-fill.C { background: linear-gradient(90deg, #ffb74d, #ff9800); }
+        .score-fill.E { background: linear-gradient(90deg, #f48fb1, #e91e63); }
+        .score-fill.A { background: linear-gradient(90deg, #64b5f6, #2196f3); }
+        .score-fill.N { background: linear-gradient(90deg, #ba68c8, #9c27b0); }
+
+        .dimension-level {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 12px;
+        }
+
+        .level-high { background: #e8f5e9; color: #2e7d32; }
+        .level-medium { background: #fff3e0; color: #ef6c00; }
+        .level-low { background: #fce4ec; color: #c2185b; }
+
+        .dimension-desc {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        .analysis-section {
+            background: var(--bg);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+        }
+
+        .analysis-title {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .analysis-content {
+            font-size: 13px;
+            color: var(--text-light);
+            line-height: 1.6;
+        }
+
+        .analysis-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+        }
+
+        .tag {
+            padding: 4px 10px;
+            background: white;
+            border-radius: 6px;
+            font-size: 12px;
+            color: var(--text);
+        }
+
+        .summary-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 20px;
+            padding: 24px;
+            color: white;
+            margin-bottom: 16px;
+        }
+
+        .summary-card h3 { font-size: 18px; margin-bottom: 16px; }
+
+        .summary-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .summary-item:last-child { border-bottom: none; }
+        .summary-icon { font-size: 20px; margin-right: 12px; }
+        .summary-text { flex: 1; }
+        .summary-label { font-size: 12px; opacity: 0.8; }
+        .summary-value { font-size: 15px; font-weight: 500; }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+
+        .btn-outline {
+            flex: 1;
+            padding: 14px 20px;
+            background: white;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline:hover { background: var(--secondary); }
+
+        .history-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            margin-bottom: 20px;
+        }
+
+        .history-card h3 {
+            font-size: 16px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 10px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .history-item:hover { background: var(--secondary); }
+        .history-item:last-child { margin-bottom: 0; }
+        .history-date { font-size: 14px; font-weight: 500; }
+        .history-preview { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+        .history-arrow { margin-left: auto; color: var(--text-light); }
+
+        .welcome-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .welcome-icon { font-size: 64px; margin-bottom: 20px; }
+        .welcome-card h2 { font-size: 22px; margin-bottom: 12px; }
+        .welcome-card p { color: var(--text-light); font-size: 14px; margin-bottom: 24px; line-height: 1.7; }
+
+        .welcome-features {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 24px;
+            text-align: left;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: var(--bg);
+            border-radius: 10px;
+        }
+
+        .feature-icon { font-size: 20px; }
+        .feature-text { font-size: 14px; }
+
+        @media (max-width: 480px) {
+            .container { padding: 16px; }
+            .header { padding: 30px 16px; margin: -16px -16px 20px -16px; }
+            .header h1 { font-size: 24px; }
+            .question-card { padding: 24px 20px; }
+            .question-text { font-size: 16px; }
+            .option { padding: 14px 16px; }
+            .dimension-card { padding: 20px; }
+            .score-value { font-size: 24px; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in { animation: fadeIn 0.3s ease; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧠 大五人格测试</h1>
+            <p>BFI-44 科学人格评估 · 约8分钟完成</p>
+        </div>
+
+        <div id="welcomeContainer">
+            <div class="welcome-card">
+                <div class="welcome-icon">🎯</div>
+                <h2>探索真实的自己</h2>
+                <p>大五人格模型是心理学界公认最可靠的人格理论，通过44道题目，科学评估你的五个核心人格维度。</p>
+                
+                <div class="welcome-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">📊</span>
+                        <span class="feature-text">五维度深度分析报告</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">💼</span>
+                        <span class="feature-text">职业发展建议</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">💕</span>
+                        <span class="feature-text">婚恋关系洞察</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🎓</span>
+                        <span class="feature-text">个人成长指南</span>
+                    </div>
+                </div>
+
+                <button class="btn btn-primary" onclick="startTest()" style="width: 100%;">开始测试</button>
+            </div>
+
+            <div class="history-card" id="historyCard" style="display: none;">
+                <h3>📋 历史记录</h3>
+                <div id="historyList"></div>
+            </div>
+        </div>
+
+        <div id="testContainer" style="display: none;">
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="progressText">第 1 题 / 共 44 题</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+            </div>
+
+            <div class="question-card fade-in" id="questionCard">
+                <span class="question-number" id="questionNumber">Q1</span>
+                <p class="question-prefix">我认为自己是一个...</p>
+                <p class="question-text" id="questionText"></p>
+                
+                <div class="options" id="optionsContainer">
+                    <div class="option" data-value="1" onclick="selectOption(this)">
+                        <div class="option-radio"></div>
+                        <span class="option-text">非常不同意</span>
+                    </div>
+                    <div class="option" data-value="2" onclick="selectOption(this)">
+                        <div class="option-radio"></div>
+                        <span class="option-text">比较不同意</span>
+                    </div>
+                    <div class="option" data-value="3" onclick="selectOption(this)">
+                        <div class="option-radio"></div>
+                        <span class="option-text">中立</span>
+                    </div>
+                    <div class="option" data-value="4" onclick="selectOption(this)">
+                        <div class="option-radio"></div>
+                        <span class="option-text">比较同意</span>
+                    </div>
+                    <div class="option" data-value="5" onclick="selectOption(this)">
+                        <div class="option-radio"></div>
+                        <span class="option-text">非常同意</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-buttons">
+                <button class="btn btn-secondary" id="prevBtn" onclick="prevQuestion()" disabled>上一题</button>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>下一题</button>
+            </div>
+        </div>
+
+        <div id="resultsContainer" style="display: none;"></div>
+    </div>
+
+    <script>
+        const questions = [
+            { id: 1, text: "健谈的人", dimension: "E", reverse: false },
+            { id: 2, text: "容易挑剔别人毛病的人", dimension: "A", reverse: true },
+            { id: 3, text: "做事彻底、不马虎的人", dimension: "C", reverse: false },
+            { id: 4, text: "情绪低落、忧郁的人", dimension: "N", reverse: false },
+            { id: 5, text: "有独创性、能提出新想法的人", dimension: "O", reverse: false },
+            { id: 6, text: "内向、沉默寡言的人", dimension: "E", reverse: true },
+            { id: 7, text: "乐于助人、对人无私的人", dimension: "A", reverse: false },
+            { id: 8, text: "有时粗心大意的人", dimension: "C", reverse: true },
+            { id: 9, text: "放松、能很好应对压力的人", dimension: "N", reverse: true },
+            { id: 10, text: "对很多不同事物感到好奇的人", dimension: "O", reverse: false },
+            { id: 11, text: "充满活力的人", dimension: "E", reverse: false },
+            { id: 12, text: "容易与人发生争执的人", dimension: "A", reverse: true },
+            { id: 13, text: "工作可靠的人", dimension: "C", reverse: false },
+            { id: 14, text: "可能会紧张的人", dimension: "N", reverse: false },
+            { id: 15, text: "思维敏捷、有深度的人", dimension: "O", reverse: false },
+            { id: 16, text: "能带动很多热情的人", dimension: "E", reverse: false },
+            { id: 17, text: "宽容的人", dimension: "A", reverse: false },
+            { id: 18, text: "做事容易杂乱无章的人", dimension: "C", reverse: true },
+            { id: 19, text: "很少担忧的人", dimension: "N", reverse: true },
+            { id: 20, text: "想象力丰富的人", dimension: "O", reverse: false },
+            { id: 21, text: "比较安静的人", dimension: "E", reverse: true },
+            { id: 22, text: "通常信任他人的人", dimension: "A", reverse: false },
+            { id: 23, text: "倾向于懒惰的人", dimension: "C", reverse: true },
+            { id: 24, text: "情绪稳定、不容易心烦意乱的人", dimension: "N", reverse: true },
+            { id: 25, text: "有创造力的人", dimension: "O", reverse: false },
+            { id: 26, text: "有主见、善于表达的人", dimension: "E", reverse: false },
+            { id: 27, text: "有时对人冷淡的人", dimension: "A", reverse: true },
+            { id: 28, text: "坚持不懈直到任务完成的人", dimension: "C", reverse: false },
+            { id: 29, text: "情绪多变的人", dimension: "N", reverse: false },
+            { id: 30, text: "重视艺术和审美体验的人", dimension: "O", reverse: false },
+            { id: 31, text: "有时害羞、拘谨的人", dimension: "E", reverse: true },
+            { id: 32, text: "对几乎所有人都体贴、友善的人", dimension: "A", reverse: false },
+            { id: 33, text: "做事有效率的人", dimension: "C", reverse: false },
+            { id: 34, text: "在紧张情境下能保持冷静的人", dimension: "N", reverse: true },
+            { id: 35, text: "喜欢按常规做事的人", dimension: "O", reverse: true },
+            { id: 36, text: "外向、善于社交的人", dimension: "E", reverse: false },
+            { id: 37, text: "有时对他人粗鲁的人", dimension: "A", reverse: true },
+            { id: 38, text: "做事有计划并能贯彻执行的人", dimension: "C", reverse: false },
+            { id: 39, text: "容易紧张的人", dimension: "N", reverse: false },
+            { id: 40, text: "喜欢思考、琢磨各种想法的人", dimension: "O", reverse: false },
+            { id: 41, text: "对艺术兴趣不大的人", dimension: "O", reverse: true },
+            { id: 42, text: "喜欢与他人合作的人", dimension: "A", reverse: false },
+            { id: 43, text: "容易分心的人", dimension: "C", reverse: true },
+            { id: 44, text: "在艺术、音乐或文学方面有较高修养的人", dimension: "O", reverse: false }
+        ];
+
+        const dimensionInfo = {
+            O: {
+                name: "开放性",
+                english: "Openness",
+                icon: "🎨",
+                count: 10,
+                high: "你富有想象力和创造力，对新事物充满好奇，喜欢探索不同的观点和体验。你欣赏艺术和美，思维活跃且不拘一格。",
+                medium: "你在传统与创新之间保持平衡，既能接受新事物，也重视已有的经验和方法。",
+                low: "你务实、脚踏实地，偏好熟悉和可预测的事物。你重视传统和常规，做事稳健可靠。",
+                career: { high: "创意设计、艺术、研究、咨询、创业", medium: "市场营销、产品经理、教育", low: "财务、行政、工程、质量管理" },
+                love: { high: "你渴望精神层面的深度连接，喜欢与伴侣分享新奇体验和深度对话。", medium: "你在关系中既追求新鲜感，也重视稳定性。", low: "你重视关系的稳定和可预测性，是可靠的长期伴侣。" }
+            },
+            C: {
+                name: "尽责性",
+                english: "Conscientiousness",
+                icon: "📋",
+                count: 9,
+                high: "你自律、有条理、做事认真负责。你善于制定计划并坚持执行，追求卓越，是值得信赖的人。",
+                medium: "你在灵活性和条理性之间取得平衡，能够根据情况调整自己的工作方式。",
+                low: "你灵活随性，不喜欢被规则束缚。你更注重当下的体验，而非长远的计划。",
+                career: { high: "项目管理、医疗、法律、金融、科研", medium: "销售、人力资源、运营", low: "艺术创作、自由职业、创意行业" },
+                love: { high: "你是可靠的伴侣，会认真经营关系，但可能需要学会放松和享受当下。", medium: "你在关系中既负责任又保持一定的灵活性。", low: "你为关系带来自发性和乐趣，但可能需要在承诺方面更加用心。" }
+            },
+            E: {
+                name: "外向性",
+                english: "Extraversion",
+                icon: "🎉",
+                count: 8,
+                high: "你热情开朗、善于社交，从与人互动中获得能量。你喜欢成为关注的焦点，充满活力和感染力。",
+                medium: "你能够在社交和独处之间灵活切换，既享受与人交往，也需要个人空间。",
+                low: "你内敛沉稳，偏好深度的一对一交流而非大型社交场合。你在独处中充电，思考深入。",
+                career: { high: "销售、公关、培训、管理、演艺", medium: "咨询、产品、市场", low: "研发、写作、分析、技术" },
+                love: { high: "你在关系中热情主动，喜欢丰富的社交生活，需要找到同样外向或理解你的伴侣。", medium: "你在关系中既能热情投入，也能给对方空间。", low: "你在关系中深沉专注，重视质量而非数量，是忠诚的伴侣。" }
+            },
+            A: {
+                name: "宜人性",
+                english: "Agreeableness",
+                icon: "🤝",
+                count: 9,
+                high: "你友善、富有同理心、乐于助人。你重视和谐的人际关系，善于合作，容易信任他人。",
+                medium: "你在合作与竞争之间保持平衡，既能体谅他人，也能坚持自己的立场。",
+                low: "你独立、直接、有竞争意识。你更关注效率和结果，不会为了取悦他人而妥协。",
+                career: { high: "护理、社工、教育、客服、人力资源", medium: "产品、运营、咨询", low: "法律、谈判、管理、创业" },
+                love: { high: "你是体贴入微的伴侣，但要注意不要过度牺牲自己的需求。", medium: "你在关系中既能照顾对方，也能表达自己的需求。", low: "你在关系中直接坦诚，需要找到欣赏你独立性的伴侣。" }
+            },
+            N: {
+                name: "神经质",
+                english: "Neuroticism",
+                icon: "🌊",
+                count: 8,
+                high: "你情感丰富、敏感细腻，容易感受到压力和负面情绪。这种敏感性也让你更能理解他人的感受。",
+                medium: "你的情绪相对稳定，但在压力下也会有所波动，这是正常的情绪反应。",
+                low: "你情绪稳定、冷静从容，能够很好地应对压力和挑战。你很少被负面情绪困扰。",
+                career: { high: "艺术创作、心理咨询、写作（需要情绪管理）", medium: "大多数职业都适合", low: "危机管理、急救、领导岗位、高压环境" },
+                love: { high: "你在关系中情感投入深，需要伴侣的理解和支持，学会情绪调节会让关系更健康。", medium: "你在关系中情绪表达适度，能够处理大多数冲突。", low: "你为关系带来稳定感，但要注意不要忽视伴侣的情感需求。" }
+            }
+        };
+
+        let currentQuestion = 0;
+        let answers = {};
+
+        function init() {
+            loadHistory();
+            document.getElementById('welcomeContainer').style.display = 'block';
+        }
+
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('bfi44_history') || '[]');
+            const historyCard = document.getElementById('historyCard');
+            const historyList = document.getElementById('historyList');
+            
+            if (history.length > 0) {
+                historyCard.style.display = 'block';
+                historyList.innerHTML = history.slice(0, 5).map((item, index) => `
+                    <div class="history-item" onclick="viewHistory(${index})">
+                        <div>
+                            <div class="history-date">${item.date}</div>
+                            <div class="history-preview">E:${item.scores.E} A:${item.scores.A} C:${item.scores.C} N:${item.scores.N} O:${item.scores.O}</div>
+                        </div>
+                        <span class="history-arrow">→</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function viewHistory(index) {
+            const history = JSON.parse(localStorage.getItem('bfi44_history') || '[]');
+            if (history[index]) {
+                showResults(history[index].scores, history[index].date);
+            }
+        }
+
+        function startTest() {
+            document.getElementById('welcomeContainer').style.display = 'none';
+            document.getElementById('testContainer').style.display = 'block';
+            currentQuestion = 0;
+            answers = {};
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Q${currentQuestion + 1}`;
+            document.getElementById('questionText').textContent = q.text;
+            
+            // Update progress
+            const progress = ((currentQuestion) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `第 ${currentQuestion + 1} 题 / 共 ${questions.length} 题`;
+            document.getElementById('progressPercent').textContent = `${Math.round(progress)}%`;
+            
+            // Reset options
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // Restore previous answer if exists
+            if (answers[currentQuestion] !== undefined) {
+                const selectedOption = document.querySelector(`.option[data-value="${answers[currentQuestion]}"]`);
+                if (selectedOption) {
+                    selectedOption.classList.add('selected');
+                }
+                document.getElementById('nextBtn').disabled = false;
+            } else {
+                document.getElementById('nextBtn').disabled = true;
+            }
+            
+            // Update prev button
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            
+            // Update next button text
+            document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? '查看结果' : '下一题';
+        }
+
+        function selectOption(element) {
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            answers[currentQuestion] = parseInt(element.dataset.value);
+            document.getElementById('nextBtn').disabled = false;
+            
+            if (currentQuestion < questions.length - 1) {
+                setTimeout(function() {
+                    nextQuestion();
+                }, 300);
+            } else {
+                setTimeout(function() {
+                    calculateAndShowResults();
+                }, 300);
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+                document.getElementById('questionCard').classList.remove('fade-in');
+                void document.getElementById('questionCard').offsetWidth;
+                document.getElementById('questionCard').classList.add('fade-in');
+            } else {
+                calculateAndShowResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function calculateAndShowResults() {
+            const scores = { O: 0, C: 0, E: 0, A: 0, N: 0 };
+            const counts = { O: 0, C: 0, E: 0, A: 0, N: 0 };
+            
+            questions.forEach((q, index) => {
+                if (answers[index] !== undefined) {
+                    let score = answers[index];
+                    if (q.reverse) {
+                        score = 6 - score;
+                    }
+                    scores[q.dimension] += score;
+                    counts[q.dimension]++;
+                }
+            });
+            
+            // Calculate percentages (1-5 scale to 0-100)
+            Object.keys(scores).forEach(dim => {
+                const maxScore = counts[dim] * 5;
+                const minScore = counts[dim] * 1;
+                scores[dim] = Math.round(((scores[dim] - minScore) / (maxScore - minScore)) * 100);
+            });
+            
+            // Save to history
+            const date = new Date().toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const history = JSON.parse(localStorage.getItem('bfi44_history') || '[]');
+            history.unshift({ date, scores, answers: {...answers} });
+            if (history.length > 10) history.pop();
+            localStorage.setItem('bfi44_history', JSON.stringify(history));
+            
+            showResults(scores, date);
+        }
+
+        function getLevel(score) {
+            if (score >= 60) return { text: '偏高', class: 'level-high' };
+            if (score >= 40) return { text: '中等', class: 'level-medium' };
+            return { text: '偏低', class: 'level-low' };
+        }
+
+        function getDescription(dim, score) {
+            const info = dimensionInfo[dim];
+            if (score >= 60) return info.high;
+            if (score >= 40) return info.medium;
+            return info.low;
+        }
+
+        function getCareer(dim, score) {
+            const info = dimensionInfo[dim];
+            if (score >= 60) return info.career.high;
+            if (score >= 40) return info.career.medium;
+            return info.career.low;
+        }
+
+        function getLove(dim, score) {
+            const info = dimensionInfo[dim];
+            if (score >= 60) return info.love.high;
+            if (score >= 40) return info.love.medium;
+            return info.love.low;
+        }
+
+        function showResults(scores, date) {
+            document.getElementById('testContainer').style.display = 'none';
+            document.getElementById('welcomeContainer').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'block';
+            
+            const dims = ['E', 'A', 'C', 'N', 'O'];
+            const sortedDims = [...dims].sort((a, b) => scores[b] - scores[a]);
+            const highest = sortedDims[0];
+            const lowest = sortedDims[sortedDims.length - 1];
+            
+            let html = `
+                <div class="results-header fade-in">
+                    <h2>🎉 测试完成！</h2>
+                    <p>以下是你的大五人格分析报告</p>
+                    <div class="results-date">测试时间：${date}</div>
+                </div>
+                
+                <div class="summary-card fade-in">
+                    <h3>📊 核心发现</h3>
+                    <div class="summary-item">
+                        <span class="summary-icon">${dimensionInfo[highest].icon}</span>
+                        <div class="summary-text">
+                            <div class="summary-label">最突出特质</div>
+                            <div class="summary-value">${dimensionInfo[highest].name} (${scores[highest]}%)</div>
+                        </div>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-icon">${dimensionInfo[lowest].icon}</span>
+                        <div class="summary-text">
+                            <div class="summary-label">相对较低</div>
+                            <div class="summary-value">${dimensionInfo[lowest].name} (${scores[lowest]}%)</div>
+                        </div>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-icon">💼</span>
+                        <div class="summary-text">
+                            <div class="summary-label">推荐职业方向</div>
+                            <div class="summary-value">${getCareer(highest, scores[highest]).split('、')[0]}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            dims.forEach(dim => {
+                const info = dimensionInfo[dim];
+                const score = scores[dim];
+                const level = getLevel(score);
+                
+                html += `
+                    <div class="dimension-card fade-in">
+                        <div class="dimension-header">
+                            <div class="dimension-icon ${dim}">${info.icon}</div>
+                            <div class="dimension-title">
+                                <h3>${info.name}</h3>
+                                <span>${info.english}</span>
+                            </div>
+                            <div class="dimension-score">
+                                <div class="score-value">${score}</div>
+                                <div class="score-label">/ 100</div>
+                            </div>
+                        </div>
+                        
+                        <div class="score-bar">
+                            <div class="score-fill ${dim}" style="width: ${score}%"></div>
+                        </div>
+                        
+                        <span class="dimension-level ${level.class}">${level.text}</span>
+                        
+                        <p class="dimension-desc">${getDescription(dim, score)}</p>
+                        
+                        <div class="analysis-section">
+                            <div class="analysis-title">💼 职业建议</div>
+                            <div class="analysis-content">${getCareer(dim, score)}</div>
+                            <div class="analysis-tags">
+                                ${getCareer(dim, score).split('、').map(c => `<span class="tag">${c}</span>`).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="analysis-section">
+                            <div class="analysis-title">💕 婚恋洞察</div>
+                            <div class="analysis-content">${getLove(dim, score)}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            html += `
+                <div class="action-buttons">
+                    <button class="btn-outline" onclick="retakeTest()">重新测试</button>
+                    <button class="btn-outline" onclick="shareResults()">分享结果</button>
+                </div>
+            `;
+            
+            document.getElementById('resultsContainer').innerHTML = html;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function retakeTest() {
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('welcomeContainer').style.display = 'block';
+            loadHistory();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function shareResults() {
+            const text = '我刚完成了大五人格测试，来测测你的人格特质吧！';
+            if (navigator.share) {
+                navigator.share({
+                    title: '大五人格测试',
+                    text: text,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(text + ' ' + window.location.href).then(() => {
+                    alert('链接已复制到剪贴板！');
+                });
+            }
+        }
+
+        // Initialize
+        init();
+    </script>
+</body>
+</html>
