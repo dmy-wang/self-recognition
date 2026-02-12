@@ -278,7 +278,6 @@
 
             .feature-grid {
                 gap: 20px;
-                grid-template-columns: repeat(2, 1fr);
             }
 
             .feature-item h3 {
@@ -291,6 +290,12 @@
 
             .feature-icon {
                 font-size: 28px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .feature-grid {
+                grid-template-columns: repeat(2, 1fr);
             }
         }
 
