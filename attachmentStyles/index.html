@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>依恋类型测试 | ECR-36</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #ec4899;
+            --primary-light: #f472b6;
+            --primary-dark: #db2777;
+            --secondary: #fce7f3;
+            --accent: #8b5cf6;
+            --bg: #fdf2f8;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --text-muted: #94a3b8;
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --gradient-primary: linear-gradient(135deg, #ec4899 0%, #f472b6 50%, #8b5cf6 100%);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 680px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 40px 20px;
+            background: var(--gradient-primary);
+            border-radius: 24px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header h1 { font-size: 28px; font-weight: 600; margin-bottom: 8px; }
+        .header p { font-size: 14px; opacity: 0.9; }
+
+        .progress-container {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
+        }
+
+        .progress-bar {
+            height: 12px;
+            background: linear-gradient(90deg, var(--border-light) 0%, var(--border) 100%);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.4);
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 12px;
+            font-size: 13px;
+            color: var(--text-light);
+        }
+
+        .question-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
+            margin-bottom: 24px;
+        }
+
+        .question-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .question-number {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .question-text {
+            font-size: 20px;
+            font-weight: 500;
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            padding: 16px 20px;
+            background: var(--bg);
+            border: 2px solid var(--border);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .option:hover {
+            border-color: var(--primary);
+            background: var(--secondary);
+        }
+
+        .option.selected {
+            border-color: var(--primary);
+            background: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.2);
+        }
+
+        .option-radio {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .option.selected .option-radio {
+            border-color: var(--primary);
+            background: var(--primary);
+        }
+
+        .option.selected .option-radio::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+        }
+
+        .option-label {
+            font-size: 15px;
+            color: var(--text);
+        }
+
+        .option-value {
+            margin-left: auto;
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 16px 24px;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--bg);
+            color: var(--text);
+            border: 2px solid var(--border);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            border-color: var(--primary);
+        }
+
+        .btn-secondary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Results Styles */
+        .results-container {
+            display: none;
+        }
+
+        .results-header {
+            text-align: center;
+            padding: 40px 24px;
+            background: var(--gradient-primary);
+            border-radius: 24px;
+            color: white;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .results-header h2 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .results-date {
+            font-size: 13px;
+            opacity: 0.8;
+            margin-top: 8px;
+        }
+
+        .type-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .type-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .type-name {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .type-description {
+            font-size: 15px;
+            color: var(--text-light);
+            line-height: 1.8;
+            margin-top: 16px;
+            text-align: left;
+        }
+
+        .scores-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .score-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 14px;
+            color: var(--text-light);
+            margin-bottom: 8px;
+        }
+
+        .score-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .score-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            margin-top: 12px;
+            overflow: hidden;
+        }
+
+        .score-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .analysis-section {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            margin-bottom: 24px;
+        }
+
+        .analysis-section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .characteristics-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .characteristic-tag {
+            padding: 10px 16px;
+            background: var(--bg);
+            border-radius: 12px;
+            font-size: 14px;
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .advice-card {
+            background: var(--bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+        }
+
+        .advice-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+
+        .advice-content {
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        .tips-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .tip-item {
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 12px;
+            font-size: 14px;
+            color: var(--text);
+            border-left: 3px solid var(--primary);
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 16px;
+            margin-top: 28px;
+            margin-bottom: 40px;
+        }
+
+        .btn-outline {
+            flex: 1;
+            padding: 16px 24px;
+            background: white;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-outline:hover {
+            background: var(--secondary);
+        }
+
+        /* Welcome Screen */
+        .welcome-container {
+            display: block;
+        }
+
+        .welcome-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 40px 32px;
+            box-shadow: var(--shadow-lg);
+            text-align: center;
+        }
+
+        .welcome-icon {
+            font-size: 72px;
+            margin-bottom: 24px;
+        }
+
+        .welcome-card h2 {
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .welcome-card p {
+            color: var(--text-light);
+            font-size: 15px;
+            margin-bottom: 24px;
+            line-height: 1.8;
+        }
+
+        .welcome-features {
+            text-align: left;
+            margin-bottom: 32px;
+        }
+
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .feature-item:last-child {
+            border-bottom: none;
+        }
+
+        .feature-icon {
+            font-size: 24px;
+        }
+
+        .feature-text {
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .start-btn {
+            width: 100%;
+            padding: 18px;
+            background: var(--gradient-primary);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(236, 72, 153, 0.4);
+        }
+
+        .test-container {
+            display: none;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 600px) {
+            .container {
+                padding: 12px;
+            }
+
+            .header {
+                padding: 30px 16px;
+                border-radius: 20px;
+            }
+
+            .header h1 {
+                font-size: 22px;
+            }
+
+            .question-card {
+                padding: 24px 20px;
+                border-radius: 20px;
+            }
+
+            .question-text {
+                font-size: 18px;
+            }
+
+            .scores-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tips-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .type-card {
+                padding: 24px 20px;
+            }
+
+            .type-name {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💕 依恋类型测试</h1>
+            <p>ECR-36 科学依恋评估 · 约5分钟完成</p>
+        </div>
+
+        <!-- Welcome Screen -->
+        <div id="welcomeContainer" class="welcome-container">
+            <div class="welcome-card">
+                <div class="welcome-icon">💝</div>
+                <h2>了解你的依恋风格</h2>
+                <p>依恋类型影响我们在亲密关系中的行为模式。通过36道题目，科学评估你的依恋风格，帮助你更好地理解自己在关系中的表现。</p>
+                
+                <div class="welcome-features">
+                    <div class="feature-item">
+                        <span class="feature-icon">🔬</span>
+                        <span class="feature-text">基于ECR量表，心理学界广泛认可</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">📊</span>
+                        <span class="feature-text">评估焦虑与回避两个核心维度</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">💡</span>
+                        <span class="feature-text">获得个性化分析与成长建议</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🎯</span>
+                        <span class="feature-text">了解安全型、焦虑型、回避型、恐惧型</span>
+                    </div>
+                </div>
+                
+                <button class="start-btn" onclick="startTest()">开始测试</button>
+            </div>
+        </div>
+
+        <!-- Test Container -->
+        <div id="testContainer" class="test-container">
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill" style="width: 0%"></div>
+                </div>
+                <div class="progress-text">
+                    <span id="progressText">第 1 题 / 共 36 题</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+            </div>
+
+            <div id="questionCard" class="question-card fade-in">
+                <div class="question-header">
+                    <div id="questionNumber" class="question-number">Q1</div>
+                </div>
+                <div id="questionText" class="question-text"></div>
+                
+                <div class="options-container" style="margin-top: 24px;">
+                    <div class="option" data-value="1" onclick="selectOption(this)">
+                        <div class="option-radio"></div>
+                        <span class="option-label">非常不同意</span>
+                        <span class="option-value">1</span>
+                    </div>
+                    <div class="option" data-value="2" onclick="selectOption(this)">
+                        <div class="option-radio"></div>
+                        <span class="option-label">不同意</span>
+                        <span class="option-value">2</span>
+                    </div>
+                    <div class="option" data-value="3" onclick="selectOption(this)">
+                        <div class="option-radio"></div>
+                        <span class="option-label">中立</span>
+                        <span class="option-value">3</span>
+                    </div>
+                    <div class="option" data-value="4" onclick="selectOption(this)">
+                        <div class="option-radio"></div>
+                        <span class="option-label">同意</span>
+                        <span class="option-value">4</span>
+                    </div>
+                    <div class="option" data-value="5" onclick="selectOption(this)">
+                        <div class="option-radio"></div>
+                        <span class="option-label">非常同意</span>
+                        <span class="option-value">5</span>
+                    </div>
+                </div>
+
+                <div class="nav-buttons">
+                    <button id="prevBtn" class="btn btn-secondary" onclick="prevQuestion()" disabled>上一题</button>
+                    <button id="nextBtn" class="btn btn-primary" onclick="nextQuestion()" disabled>下一题</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Container -->
+        <div id="resultsContainer" class="results-container"></div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        let currentQuestion = 0;
+        let answers = {};
+        const questions = QUESTIONS;
+
+        function startTest() {
+            document.getElementById('welcomeContainer').style.display = 'none';
+            document.getElementById('testContainer').style.display = 'block';
+            currentQuestion = 0;
+            answers = {};
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('questionNumber').textContent = `Q${currentQuestion + 1}`;
+            document.getElementById('questionText').textContent = q.text;
+            
+            const progress = ((currentQuestion) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `第 ${currentQuestion + 1} 题 / 共 ${questions.length} 题`;
+            document.getElementById('progressPercent').textContent = `${Math.round(progress)}%`;
+            
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            if (answers[currentQuestion] !== undefined) {
+                const selectedOption = document.querySelector(`.option[data-value="${answers[currentQuestion]}"]`);
+                if (selectedOption) {
+                    selectedOption.classList.add('selected');
+                }
+                document.getElementById('nextBtn').disabled = false;
+            } else {
+                document.getElementById('nextBtn').disabled = true;
+            }
+            
+            document.getElementById('prevBtn').disabled = currentQuestion === 0;
+            document.getElementById('nextBtn').textContent = currentQuestion === questions.length - 1 ? '查看结果' : '下一题';
+        }
+
+        function selectOption(element) {
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            element.classList.add('selected');
+            answers[currentQuestion] = parseInt(element.dataset.value);
+            document.getElementById('nextBtn').disabled = false;
+            
+            if (currentQuestion < questions.length - 1) {
+                setTimeout(function() {
+                    nextQuestion();
+                }, 300);
+            } else {
+                setTimeout(function() {
+                    calculateAndShowResults();
+                }, 300);
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                renderQuestion();
+                document.getElementById('questionCard').classList.remove('fade-in');
+                void document.getElementById('questionCard').offsetWidth;
+                document.getElementById('questionCard').classList.add('fade-in');
+            } else {
+                calculateAndShowResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                renderQuestion();
+            }
+        }
+
+        function calculateAndShowResults() {
+            const scores = { A: 0, R: 0 };
+            const counts = { A: 0, R: 0 };
+            
+            questions.forEach((q, index) => {
+                if (answers[index] !== undefined) {
+                    let score = answers[index];
+                    if (q.reverse) {
+                        score = 6 - score;
+                    }
+                    scores[q.dimension] += score;
+                    counts[q.dimension]++;
+                }
+            });
+            
+            // Calculate percentages (1-5 scale to 0-100)
+            Object.keys(scores).forEach(dim => {
+                const maxScore = counts[dim] * 5;
+                const minScore = counts[dim] * 1;
+                scores[dim] = Math.round(((scores[dim] - minScore) / (maxScore - minScore)) * 100);
+            });
+            
+            const date = new Date().toLocaleString('zh-CN', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            
+            const history = JSON.parse(localStorage.getItem('attachment_history') || '[]');
+            history.unshift({ date, scores, answers: {...answers} });
+            if (history.length > 10) history.pop();
+            localStorage.setItem('attachment_history', JSON.stringify(history));
+            
+            showResults(scores, date);
+        }
+
+        function showResults(scores, date) {
+            document.getElementById('testContainer').style.display = 'none';
+            document.getElementById('welcomeContainer').style.display = 'none';
+            document.getElementById('resultsContainer').style.display = 'block';
+            
+            const attachmentType = getAttachmentType(scores.A, scores.R);
+            const typeInfo = ATTACHMENT_TYPES[attachmentType];
+            
+            const anxietyPercentile = getPercentile(scores.A, 'A');
+            const avoidancePercentile = getPercentile(scores.R, 'R');
+            
+            let html = `
+                <div class="results-header fade-in">
+                    <h2>🎉 测试完成！</h2>
+                    <p>以下是你的依恋类型分析报告</p>
+                    <div class="results-date">测试时间：${date}</div>
+                </div>
+                
+                <div class="type-card fade-in" style="border-left: 4px solid ${typeInfo.color}">
+                    <div class="type-icon">${typeInfo.icon}</div>
+                    <div class="type-name" style="color: ${typeInfo.color}">${typeInfo.name}</div>
+                    <div class="type-description">${typeInfo.description}</div>
+                </div>
+                
+                <div class="scores-grid fade-in">
+                    <div class="score-card">
+                        <div class="score-label">😰 焦虑维度</div>
+                        <div class="score-value">${scores.A}</div>
+                        <div class="score-bar">
+                            <div class="score-fill" style="width: ${scores.A}%"></div>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-light); margin-top: 8px;">
+                            人群排名：${getPercentileDescription(anxietyPercentile)}
+                        </div>
+                    </div>
+                    <div class="score-card">
+                        <div class="score-label">🛡️ 回避维度</div>
+                        <div class="score-value">${scores.R}</div>
+                        <div class="score-bar">
+                            <div class="score-fill" style="width: ${scores.R}%"></div>
+                        </div>
+                        <div style="font-size: 12px; color: var(--text-light); margin-top: 8px;">
+                            人群排名：${getPercentileDescription(avoidancePercentile)}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section fade-in">
+                    <div class="analysis-section-title">✨ 核心特质</div>
+                    <div class="characteristics-list">
+                        ${typeInfo.characteristics.map(c => `<span class="characteristic-tag">${c}</span>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="analysis-section fade-in">
+                    <div class="analysis-section-title">💪 你的优势</div>
+                    <div class="characteristics-list">
+                        ${typeInfo.strengths.map(s => `<span class="characteristic-tag" style="border-color: #10b981">${s}</span>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="analysis-section fade-in">
+                    <div class="analysis-section-title">🌱 成长方向</div>
+                    <div class="characteristics-list">
+                        ${typeInfo.challenges.map(c => `<span class="characteristic-tag" style="border-color: #f59e0b">${c}</span>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="analysis-section fade-in">
+                    <div class="analysis-section-title">💡 关系建议</div>
+                    <div class="advice-card">
+                        <div class="advice-title">给自己的建议</div>
+                        <div class="advice-content">${ANALYSIS_CONTENT.relationshipAdvice[attachmentType].self}</div>
+                    </div>
+                    <div class="advice-card">
+                        <div class="advice-title">关于伴侣</div>
+                        <div class="advice-content">${ANALYSIS_CONTENT.relationshipAdvice[attachmentType].partner}</div>
+                    </div>
+                </div>
+                
+                <div class="analysis-section fade-in">
+                    <div class="analysis-section-title">🎯 成长建议</div>
+                    <div class="tips-grid">
+                        ${ANALYSIS_CONTENT.growthTips[attachmentType].map(tip => `<div class="tip-item">${tip}</div>`).join('')}
+                    </div>
+                </div>
+                
+                <div class="analysis-section fade-in">
+                    <div class="analysis-section-title">💕 情感风格</div>
+                    <div class="advice-content">${typeInfo.loveStyle}</div>
+                </div>
+                
+                <div class="analysis-section fade-in">
+                    <div class="analysis-section-title">💼 工作风格</div>
+                    <div class="advice-content">${typeInfo.careerStyle}</div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn-outline" onclick="retakeTest()">重新测试</button>
+                    <button class="btn-outline" onclick="shareResults()">分享结果</button>
+                </div>
+            `;
+            
+            document.getElementById('resultsContainer').innerHTML = html;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function retakeTest() {
+            document.getElementById('resultsContainer').style.display = 'none';
+            document.getElementById('welcomeContainer').style.display = 'block';
+            currentQuestion = 0;
+            answers = {};
+        }
+
+        function shareResults() {
+            const text = '我刚完成了依恋类型测试！来测测你的依恋风格吧~';
+            if (navigator.share) {
+                navigator.share({
+                    title: '依恋类型测试',
+                    text: text,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(window.location.href).then(() => {
+                    alert('链接已复制到剪贴板！');
+                });
+            }
+        }
+    </script>
+</body>
+</html>
