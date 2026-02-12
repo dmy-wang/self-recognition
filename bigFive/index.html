@@ -334,167 +334,504 @@
             box-shadow: none;
         }
 
+        /* 结果页面样式 - 参考设计 */
         .results-header {
             text-align: center;
-            padding: 30px;
+            padding: 40px 30px;
             background: var(--card);
-            border-radius: 20px;
-            box-shadow: var(--shadow);
-            margin-bottom: 20px;
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 24px;
+            border: 1px solid var(--border-light);
         }
 
-        .results-header h2 { font-size: 24px; margin-bottom: 8px; }
-        .results-header p { color: var(--text-light); font-size: 14px; }
-        .results-date { font-size: 12px; color: var(--text-light); margin-top: 12px; }
+        .results-header h2 { 
+            font-size: 28px; 
+            margin-bottom: 12px; 
+            color: var(--text);
+            font-weight: 700;
+        }
+        .results-header p { 
+            color: var(--text-light); 
+            font-size: 16px; 
+            margin-bottom: 8px;
+        }
+        .results-date { 
+            font-size: 13px; 
+            color: var(--text-muted); 
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid var(--border);
+        }
 
-        .dimension-card {
+        /* 雷达图和进度条容器 */
+        .results-overview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .results-overview {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 雷达图容器 */
+        .radar-container {
             background: var(--card);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #radarChart {
+            width: 100%;
+            max-width: 350px;
+        }
+
+        /* 维度进度条列表 */
+        .dimensions-list {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border-light);
+        }
+
+        .dimension-progress-item {
+            margin-bottom: 24px;
+        }
+
+        .dimension-progress-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .dimension-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .dimension-progress-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .dimension-progress-score {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .dimension-progress-bar {
+            height: 10px;
+            background: var(--border-light);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .dimension-progress-fill {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 各维度颜色 */
+        .dimension-progress-fill.O { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .dimension-progress-fill.C { background: linear-gradient(90deg, #10b981, #34d399); }
+        .dimension-progress-fill.E { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .dimension-progress-fill.A { background: linear-gradient(90deg, #ec4899, #f472b6); }
+        .dimension-progress-fill.N { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
+
+        /* 智能分析部分 */
+        .analysis-section-title {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .analysis-section-title::before,
+        .analysis-section-title::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            width: 100px;
+            height: 1px;
+            background: var(--border);
+        }
+
+        .analysis-section-title::before {
+            left: 0;
+        }
+
+        .analysis-section-title::after {
+            right: 0;
+        }
+
+        /* 性格总结卡片 */
+        .summary-card-main {
+            background: linear-gradient(135deg, #ede9fe 0%, #f5f3ff 100%);
+            border-radius: 20px;
+            padding: 28px;
+            margin-bottom: 24px;
+            border: 1px solid #ddd6fe;
+        }
+
+        .summary-card-main h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #5b21b6;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .summary-card-main p {
+            font-size: 15px;
+            color: #6d28d9;
+            line-height: 1.8;
+        }
+
+        /* 分析卡片网格 */
+        .analysis-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        @media (max-width: 600px) {
+            .analysis-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .analysis-card {
             border-radius: 20px;
             padding: 24px;
-            box-shadow: var(--shadow);
+            border: 1px solid;
+        }
+
+        .analysis-card.green {
+            background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+            border-color: #a7f3d0;
+        }
+
+        .analysis-card.yellow {
+            background: linear-gradient(135deg, #fffbeb 0%, #fefce8 100%);
+            border-color: #fde68a;
+        }
+
+        .analysis-card.blue {
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+            border-color: #bfdbfe;
+        }
+
+        .analysis-card.pink {
+            background: linear-gradient(135deg, #fdf2f8 0%, #fdf4ff 100%);
+            border-color: #fbcfe8;
+        }
+
+        .analysis-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
             margin-bottom: 16px;
+        }
+
+        .analysis-card-icon {
+            font-size: 20px;
+        }
+
+        .analysis-card-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .analysis-card.green .analysis-card-title { color: #047857; }
+        .analysis-card.yellow .analysis-card-title { color: #b45309; }
+        .analysis-card.blue .analysis-card-title { color: #1e40af; }
+        .analysis-card.pink .analysis-card-title { color: #be185d; }
+
+        .analysis-card-content {
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .analysis-card.green .analysis-card-content { color: #065f46; }
+        .analysis-card.yellow .analysis-card-content { color: #92400e; }
+        .analysis-card.blue .analysis-card-content { color: #1e3a8a; }
+        .analysis-card.pink .analysis-card-content { color: #9d174d; }
+
+        .analysis-card-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .analysis-card-list li {
+            padding: 6px 0;
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .analysis-card-list li::before {
+            content: '•';
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* 标签样式 */
+        .tags-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .tag-item {
+            padding: 8px 16px;
+            background: white;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid #bfdbfe;
+            color: #1e40af;
+        }
+
+        /* 百分位徽章和排名 */
+        .percentile-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        .dimension-percentile {
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+        }
+
+        /* 详细维度卡片 */
+        .dimension-card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 20px;
+            border: 1px solid var(--border-light);
         }
 
         .dimension-header {
             display: flex;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
         }
 
         .dimension-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 24px;
-            margin-right: 14px;
+            font-size: 26px;
+            margin-right: 16px;
         }
 
-        .dimension-icon.O { background: #e8f5e9; }
-        .dimension-icon.C { background: #fff3e0; }
-        .dimension-icon.E { background: #fce4ec; }
-        .dimension-icon.A { background: #e3f2fd; }
-        .dimension-icon.N { background: #f3e5f5; }
+        .dimension-icon.O { background: linear-gradient(135deg, #dbeafe, #bfdbfe); }
+        .dimension-icon.C { background: linear-gradient(135deg, #d1fae5, #a7f3d0); }
+        .dimension-icon.E { background: linear-gradient(135deg, #fef3c7, #fde68a); }
+        .dimension-icon.A { background: linear-gradient(135deg, #fce7f3, #fbcfe8); }
+        .dimension-icon.N { background: linear-gradient(135deg, #ede9fe, #ddd6fe); }
 
-        .dimension-title h3 { font-size: 18px; margin-bottom: 2px; }
-        .dimension-title span { font-size: 13px; color: var(--text-light); }
+        .dimension-title h3 { font-size: 18px; margin-bottom: 4px; font-weight: 700; }
+        .dimension-title span { font-size: 13px; color: var(--text-light); font-weight: 500; }
 
         .dimension-score { margin-left: auto; text-align: right; }
-        .score-value { font-size: 28px; font-weight: 600; color: var(--primary); }
-        .score-label { font-size: 12px; color: var(--text-light); }
+        .score-value { font-size: 32px; font-weight: 700; color: var(--primary); }
+        .score-label { font-size: 13px; color: var(--text-muted); }
 
         .score-bar {
-            height: 10px;
-            background: var(--border);
-            border-radius: 5px;
+            height: 12px;
+            background: var(--border-light);
+            border-radius: 10px;
             margin-bottom: 16px;
             overflow: hidden;
         }
 
         .score-fill {
             height: 100%;
-            border-radius: 5px;
-            transition: width 0.5s ease;
+            border-radius: 10px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        .score-fill.O { background: linear-gradient(90deg, #66bb6a, #43a047); }
-        .score-fill.C { background: linear-gradient(90deg, #ffb74d, #ff9800); }
-        .score-fill.E { background: linear-gradient(90deg, #f48fb1, #e91e63); }
-        .score-fill.A { background: linear-gradient(90deg, #64b5f6, #2196f3); }
-        .score-fill.N { background: linear-gradient(90deg, #ba68c8, #9c27b0); }
+        .score-fill.O { background: linear-gradient(90deg, #3b82f6, #60a5fa); }
+        .score-fill.C { background: linear-gradient(90deg, #10b981, #34d399); }
+        .score-fill.E { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .score-fill.A { background: linear-gradient(90deg, #ec4899, #f472b6); }
+        .score-fill.N { background: linear-gradient(90deg, #8b5cf6, #a78bfa); }
 
         .dimension-level {
             display: inline-block;
-            padding: 4px 12px;
+            padding: 6px 14px;
             border-radius: 20px;
             font-size: 13px;
-            font-weight: 500;
-            margin-bottom: 12px;
+            font-weight: 600;
+            margin-bottom: 16px;
         }
 
-        .level-high { background: #e8f5e9; color: #2e7d32; }
-        .level-medium { background: #fff3e0; color: #ef6c00; }
-        .level-low { background: #fce4ec; color: #c2185b; }
+        .level-high { background: #d1fae5; color: #065f46; }
+        .level-medium { background: #fef3c7; color: #92400e; }
+        .level-low { background: #fee2e2; color: #991b1b; }
 
         .dimension-desc {
+            font-size: 15px;
+            color: var(--text-light);
+            line-height: 1.8;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: var(--bg);
+            border-radius: 12px;
+        }
+
+        .analysis-detail-section {
+            background: var(--bg);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 16px;
+        }
+
+        .analysis-detail-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .analysis-detail-content {
             font-size: 14px;
             color: var(--text-light);
             line-height: 1.7;
-            margin-bottom: 16px;
         }
 
-        .analysis-section {
-            background: var(--bg);
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 12px;
-        }
-
-        .analysis-title {
-            font-size: 14px;
-            font-weight: 600;
-            margin-bottom: 8px;
+        /* 增强版分析样式 */
+        .famous-personality-card {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-radius: 16px;
+            padding: 20px 24px;
+            margin: 20px 0;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 16px;
+            box-shadow: 0 4px 15px rgba(251, 191, 36, 0.2);
         }
 
-        .analysis-content {
+        .famous-personality-icon {
+            font-size: 32px;
+        }
+
+        .famous-personality-label {
             font-size: 13px;
+            color: #92400e;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .famous-personality-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #78350f;
+        }
+
+        .enhanced-analysis-section {
+            margin-bottom: 24px;
+        }
+
+        .advice-card, .stress-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--primary);
+        }
+
+        .stress-card {
+            border-left-color: #f59e0b;
+        }
+
+        .advice-dimension, .stress-dimension {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .stress-dimension {
+            color: #f59e0b;
+        }
+
+        .advice-content, .stress-content {
+            font-size: 14px;
             color: var(--text-light);
-            line-height: 1.6;
+            line-height: 1.7;
         }
 
-        .analysis-tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-            margin-top: 8px;
+        .learning-style-card {
+            background: var(--card);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: var(--shadow);
         }
 
-        .tag {
-            padding: 4px 10px;
-            background: white;
-            border-radius: 6px;
-            font-size: 12px;
-            color: var(--text);
-        }
-
-        .summary-card {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            border-radius: 20px;
-            padding: 24px;
-            color: white;
-            margin-bottom: 16px;
-        }
-
-        .summary-card h3 { font-size: 18px; margin-bottom: 16px; }
-
-        .summary-item {
-            display: flex;
-            align-items: center;
+        .learning-style-item {
             padding: 12px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+            border-bottom: 1px solid var(--border-light);
+            font-size: 14px;
+            color: var(--text-light);
+            line-height: 1.7;
         }
 
-        .summary-item:last-child { border-bottom: none; }
-        .summary-icon { font-size: 20px; margin-right: 12px; }
-        .summary-text { flex: 1; }
-        .summary-label { font-size: 12px; opacity: 0.8; }
-        .summary-value { font-size: 15px; font-weight: 500; }
+        .learning-style-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .learning-style-item:first-child {
+            padding-top: 0;
+        }
 
         .action-buttons {
             display: flex;
-            gap: 12px;
-            margin-top: 20px;
-            margin-bottom: 30px;
+            gap: 16px;
+            margin-top: 28px;
+            margin-bottom: 40px;
         }
 
         .btn-outline {
             flex: 1;
-            padding: 14px 20px;
+            padding: 16px 24px;
             background: white;
             border: 2px solid var(--primary);
             color: var(--primary);
@@ -646,7 +983,7 @@
 
             <div class="question-card fade-in" id="questionCard">
                 <span class="question-number" id="questionNumber">Q1</span>
-                <p class="question-prefix">我认为自己是一个...</p>
+                <!-- <p class="question-prefix">我认为自己是一个...</p> -->
                 <p class="question-text" id="questionText"></p>
                 
                 <div class="options" id="optionsContainer">
@@ -682,6 +1019,9 @@
         <div id="resultsContainer" style="display: none;"></div>
     </div>
 
+    <!-- 引入数据文件 -->
+    <script src="data.js"></script>
+
     <script>
         // ========== 密码验证 ==========
         const ACCESS_PASSWORD = "test2024";  // 改成你想要的密码
@@ -708,110 +1048,9 @@
         })();
         // ========== 密码验证结束 ==========
 
-        const questions = [
-            { id: 1, text: "健谈的人", dimension: "E", reverse: false },
-            { id: 2, text: "容易挑剔别人毛病的人", dimension: "A", reverse: true },
-            { id: 3, text: "做事彻底、不马虎的人", dimension: "C", reverse: false },
-            { id: 4, text: "情绪低落、忧郁的人", dimension: "N", reverse: false },
-            { id: 5, text: "有独创性、能提出新想法的人", dimension: "O", reverse: false },
-            { id: 6, text: "内向、沉默寡言的人", dimension: "E", reverse: true },
-            { id: 7, text: "乐于助人、对人无私的人", dimension: "A", reverse: false },
-            { id: 8, text: "有时粗心大意的人", dimension: "C", reverse: true },
-            { id: 9, text: "放松、能很好应对压力的人", dimension: "N", reverse: true },
-            { id: 10, text: "对很多不同事物感到好奇的人", dimension: "O", reverse: false },
-            { id: 11, text: "充满活力的人", dimension: "E", reverse: false },
-            { id: 12, text: "容易与人发生争执的人", dimension: "A", reverse: true },
-            { id: 13, text: "工作可靠的人", dimension: "C", reverse: false },
-            { id: 14, text: "可能会紧张的人", dimension: "N", reverse: false },
-            { id: 15, text: "思维敏捷、有深度的人", dimension: "O", reverse: false },
-            { id: 16, text: "能带动很多热情的人", dimension: "E", reverse: false },
-            { id: 17, text: "宽容的人", dimension: "A", reverse: false },
-            { id: 18, text: "做事容易杂乱无章的人", dimension: "C", reverse: true },
-            { id: 19, text: "很少担忧的人", dimension: "N", reverse: true },
-            { id: 20, text: "想象力丰富的人", dimension: "O", reverse: false },
-            { id: 21, text: "比较安静的人", dimension: "E", reverse: true },
-            { id: 22, text: "通常信任他人的人", dimension: "A", reverse: false },
-            { id: 23, text: "倾向于懒惰的人", dimension: "C", reverse: true },
-            { id: 24, text: "情绪稳定、不容易心烦意乱的人", dimension: "N", reverse: true },
-            { id: 25, text: "有创造力的人", dimension: "O", reverse: false },
-            { id: 26, text: "有主见、善于表达的人", dimension: "E", reverse: false },
-            { id: 27, text: "有时对人冷淡的人", dimension: "A", reverse: true },
-            { id: 28, text: "坚持不懈直到任务完成的人", dimension: "C", reverse: false },
-            { id: 29, text: "情绪多变的人", dimension: "N", reverse: false },
-            { id: 30, text: "重视艺术和审美体验的人", dimension: "O", reverse: false },
-            { id: 31, text: "有时害羞、拘谨的人", dimension: "E", reverse: true },
-            { id: 32, text: "对几乎所有人都体贴、友善的人", dimension: "A", reverse: false },
-            { id: 33, text: "做事有效率的人", dimension: "C", reverse: false },
-            { id: 34, text: "在紧张情境下能保持冷静的人", dimension: "N", reverse: true },
-            { id: 35, text: "喜欢按常规做事的人", dimension: "O", reverse: true },
-            { id: 36, text: "外向、善于社交的人", dimension: "E", reverse: false },
-            { id: 37, text: "有时对他人粗鲁的人", dimension: "A", reverse: true },
-            { id: 38, text: "做事有计划并能贯彻执行的人", dimension: "C", reverse: false },
-            { id: 39, text: "容易紧张的人", dimension: "N", reverse: false },
-            { id: 40, text: "喜欢思考、琢磨各种想法的人", dimension: "O", reverse: false },
-            { id: 41, text: "对艺术兴趣不大的人", dimension: "O", reverse: true },
-            { id: 42, text: "喜欢与他人合作的人", dimension: "A", reverse: false },
-            { id: 43, text: "容易分心的人", dimension: "C", reverse: true },
-            { id: 44, text: "在艺术、音乐或文学方面有较高修养的人", dimension: "O", reverse: false }
-        ];
-
-        const dimensionInfo = {
-            O: {
-                name: "开放性",
-                english: "Openness",
-                icon: "🎨",
-                count: 10,
-                high: "你富有想象力和创造力，对新事物充满好奇，喜欢探索不同的观点和体验。你欣赏艺术和美，思维活跃且不拘一格。",
-                medium: "你在传统与创新之间保持平衡，既能接受新事物，也重视已有的经验和方法。",
-                low: "你务实、脚踏实地，偏好熟悉和可预测的事物。你重视传统和常规，做事稳健可靠。",
-                career: { high: "创意设计、艺术、研究、咨询、创业", medium: "市场营销、产品经理、教育", low: "财务、行政、工程、质量管理" },
-                love: { high: "你渴望精神层面的深度连接，喜欢与伴侣分享新奇体验和深度对话。", medium: "你在关系中既追求新鲜感，也重视稳定性。", low: "你重视关系的稳定和可预测性，是可靠的长期伴侣。" }
-            },
-            C: {
-                name: "尽责性",
-                english: "Conscientiousness",
-                icon: "📋",
-                count: 9,
-                high: "你自律、有条理、做事认真负责。你善于制定计划并坚持执行，追求卓越，是值得信赖的人。",
-                medium: "你在灵活性和条理性之间取得平衡，能够根据情况调整自己的工作方式。",
-                low: "你灵活随性，不喜欢被规则束缚。你更注重当下的体验，而非长远的计划。",
-                career: { high: "项目管理、医疗、法律、金融、科研", medium: "销售、人力资源、运营", low: "艺术创作、自由职业、创意行业" },
-                love: { high: "你是可靠的伴侣，会认真经营关系，但可能需要学会放松和享受当下。", medium: "你在关系中既负责任又保持一定的灵活性。", low: "你为关系带来自发性和乐趣，但可能需要在承诺方面更加用心。" }
-            },
-            E: {
-                name: "外向性",
-                english: "Extraversion",
-                icon: "🎉",
-                count: 8,
-                high: "你热情开朗、善于社交，从与人互动中获得能量。你喜欢成为关注的焦点，充满活力和感染力。",
-                medium: "你能够在社交和独处之间灵活切换，既享受与人交往，也需要个人空间。",
-                low: "你内敛沉稳，偏好深度的一对一交流而非大型社交场合。你在独处中充电，思考深入。",
-                career: { high: "销售、公关、培训、管理、演艺", medium: "咨询、产品、市场", low: "研发、写作、分析、技术" },
-                love: { high: "你在关系中热情主动，喜欢丰富的社交生活，需要找到同样外向或理解你的伴侣。", medium: "你在关系中既能热情投入，也能给对方空间。", low: "你在关系中深沉专注，重视质量而非数量，是忠诚的伴侣。" }
-            },
-            A: {
-                name: "宜人性",
-                english: "Agreeableness",
-                icon: "🤝",
-                count: 9,
-                high: "你友善、富有同理心、乐于助人。你重视和谐的人际关系，善于合作，容易信任他人。",
-                medium: "你在合作与竞争之间保持平衡，既能体谅他人，也能坚持自己的立场。",
-                low: "你独立、直接、有竞争意识。你更关注效率和结果，不会为了取悦他人而妥协。",
-                career: { high: "护理、社工、教育、客服、人力资源", medium: "产品、运营、咨询", low: "法律、谈判、管理、创业" },
-                love: { high: "你是体贴入微的伴侣，但要注意不要过度牺牲自己的需求。", medium: "你在关系中既能照顾对方，也能表达自己的需求。", low: "你在关系中直接坦诚，需要找到欣赏你独立性的伴侣。" }
-            },
-            N: {
-                name: "神经质",
-                english: "Neuroticism",
-                icon: "🌊",
-                count: 8,
-                high: "你情感丰富、敏感细腻，容易感受到压力和负面情绪。这种敏感性也让你更能理解他人的感受。",
-                medium: "你的情绪相对稳定，但在压力下也会有所波动，这是正常的情绪反应。",
-                low: "你情绪稳定、冷静从容，能够很好地应对压力和挑战。你很少被负面情绪困扰。",
-                career: { high: "艺术创作、心理咨询、写作（需要情绪管理）", medium: "大多数职业都适合", low: "危机管理、急救、领导岗位、高压环境" },
-                love: { high: "你在关系中情感投入深，需要伴侣的理解和支持，学会情绪调节会让关系更健康。", medium: "你在关系中情绪表达适度，能够处理大多数冲突。", low: "你为关系带来稳定感，但要注意不要忽视伴侣的情感需求。" }
-            }
-        };
+        // 使用 data.js 中的数据
+        const questions = QUESTIONS;
+        const dimensionInfo = DIMENSION_INFO;
 
         let currentQuestion = 0;
         let answers = {};
@@ -966,14 +1205,22 @@
             showResults(scores, date);
         }
 
+        // 辅助函数（data.js 中已定义，这里保留作为后备）
         function getLevel(score) {
+            if (score >= 70) return { text: '很高', class: 'level-very-high' };
             if (score >= 60) return { text: '偏高', class: 'level-high' };
             if (score >= 40) return { text: '中等', class: 'level-medium' };
-            return { text: '偏低', class: 'level-low' };
+            if (score >= 30) return { text: '偏低', class: 'level-low' };
+            return { text: '很低', class: 'level-very-low' };
         }
 
         function getDescription(dim, score) {
             const info = dimensionInfo[dim];
+            if (info.descriptions) {
+                if (score >= 60) return info.descriptions.high;
+                if (score >= 40) return info.descriptions.medium;
+                return info.descriptions.low;
+            }
             if (score >= 60) return info.high;
             if (score >= 40) return info.medium;
             return info.low;
@@ -981,16 +1228,22 @@
 
         function getCareer(dim, score) {
             const info = dimensionInfo[dim];
-            if (score >= 60) return info.career.high;
-            if (score >= 40) return info.career.medium;
-            return info.career.low;
+            if (info.career) {
+                if (score >= 60) return info.career.high;
+                if (score >= 40) return info.career.medium;
+                return info.career.low;
+            }
+            return '';
         }
 
         function getLove(dim, score) {
             const info = dimensionInfo[dim];
-            if (score >= 60) return info.love.high;
-            if (score >= 40) return info.love.medium;
-            return info.love.low;
+            if (info.love) {
+                if (score >= 60) return info.love.high;
+                if (score >= 40) return info.love.medium;
+                return info.love.low;
+            }
+            return '';
         }
 
         function showResults(scores, date) {
@@ -999,9 +1252,13 @@
             document.getElementById('resultsContainer').style.display = 'block';
             
             const dims = ['E', 'A', 'C', 'N', 'O'];
+            const dimNames = { O: '开放性 (Openness)', C: '尽责性 (Conscientiousness)', E: '外向性 (Extraversion)', A: '宜人性 (Agreeableness)', N: '神经质 (Neuroticism)' };
             const sortedDims = [...dims].sort((a, b) => scores[b] - scores[a]);
             const highest = sortedDims[0];
             const lowest = sortedDims[sortedDims.length - 1];
+            
+            // 生成雷达图SVG
+            const radarSvg = generateRadarChart(scores);
             
             let html = `
                 <div class="results-header fade-in">
@@ -1010,32 +1267,94 @@
                     <div class="results-date">测试时间：${date}</div>
                 </div>
                 
-                <div class="summary-card fade-in">
-                    <h3>📊 核心发现</h3>
-                    <div class="summary-item">
-                        <span class="summary-icon">${dimensionInfo[highest].icon}</span>
-                        <div class="summary-text">
-                            <div class="summary-label">最突出特质</div>
-                            <div class="summary-value">${dimensionInfo[highest].name} (${scores[highest]}%)</div>
+                <!-- 雷达图和进度条概览 -->
+                <div class="results-overview fade-in">
+                    <div class="radar-container">
+                        ${radarSvg}
+                    </div>
+                    <div class="dimensions-list">
+                        ${dims.map(dim => {
+                            const percentile = getPercentile(scores[dim], dim);
+                            const percentileDesc = getPercentileDescription(percentile);
+                            return `
+                            <div class="dimension-progress-item">
+                                <div class="dimension-progress-header">
+                                    <span class="dimension-progress-name">${dimNames[dim]}</span>
+                                    <span class="dimension-progress-score">${scores[dim]} 分 <span class="percentile-badge">前${100 - percentile}%</span></span>
+                                </div>
+                                <div class="dimension-progress-bar">
+                                    <div class="dimension-progress-fill ${dim}" style="width: ${scores[dim]}%"></div>
+                                </div>
+                                <div class="dimension-percentile">人群排名：${percentileDesc}</div>
+                            </div>
+                        `}).join('')}
+                    </div>
+                </div>
+                
+                <!-- 智能分析 -->
+                <div class="analysis-section-title">智能分析</div>
+                
+                <!-- 性格总结 -->
+                <div class="summary-card-main fade-in">
+                    <h3>📋 性格总结</h3>
+                    <p>${generateSummary(scores, highest, lowest)}</p>
+                </div>
+                
+                <!-- 名人参考 -->
+                ${getFamousPersonalityHTML(scores)}
+                
+                <!-- 分析卡片网格 -->
+                <div class="analysis-grid fade-in">
+                    <div class="analysis-card green">
+                        <div class="analysis-card-header">
+                            <span class="analysis-card-icon">🛡️</span>
+                            <span class="analysis-card-title">核心优势</span>
+                        </div>
+                        <div class="analysis-card-content">
+                            <ul class="analysis-card-list">
+                                ${generateStrengths(scores, highest)}
+                            </ul>
                         </div>
                     </div>
-                    <div class="summary-item">
-                        <span class="summary-icon">${dimensionInfo[lowest].icon}</span>
-                        <div class="summary-text">
-                            <div class="summary-label">相对较低</div>
-                            <div class="summary-value">${dimensionInfo[lowest].name} (${scores[lowest]}%)</div>
+                    <div class="analysis-card yellow">
+                        <div class="analysis-card-header">
+                            <span class="analysis-card-icon">⚠️</span>
+                            <span class="analysis-card-title">潜在盲点</span>
+                        </div>
+                        <div class="analysis-card-content">
+                            <ul class="analysis-card-list">
+                                ${generateWeaknesses(scores, lowest)}
+                            </ul>
                         </div>
                     </div>
-                    <div class="summary-item">
-                        <span class="summary-icon">💼</span>
-                        <div class="summary-text">
-                            <div class="summary-label">推荐职业方向</div>
-                            <div class="summary-value">${getCareer(highest, scores[highest]).split('、')[0]}</div>
+                    <div class="analysis-card blue">
+                        <div class="analysis-card-header">
+                            <span class="analysis-card-icon">💼</span>
+                            <span class="analysis-card-title">适合职业</span>
+                        </div>
+                        <div class="analysis-card-content">
+                            <div class="tags-container">
+                                ${(() => {
+                                    const career = getCareer(highest, scores[highest]);
+                                    if (!career) return '<span class="tag-item">暂无建议</span>';
+                                    return career.split('、').slice(0, 5).map(c => `<span class="tag-item">${c}</span>`).join('');
+                                })()}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="analysis-card pink">
+                        <div class="analysis-card-header">
+                            <span class="analysis-card-icon">💕</span>
+                            <span class="analysis-card-title">情感建议</span>
+                        </div>
+                        <div class="analysis-card-content">
+                            ${getLove(highest, scores[highest])}
                         </div>
                     </div>
                 </div>
             `;
             
+            // 详细维度分析
             dims.forEach(dim => {
                 const info = dimensionInfo[dim];
                 const score = scores[dim];
@@ -1063,21 +1382,21 @@
                         
                         <p class="dimension-desc">${getDescription(dim, score)}</p>
                         
-                        <div class="analysis-section">
-                            <div class="analysis-title">💼 职业建议</div>
-                            <div class="analysis-content">${getCareer(dim, score)}</div>
-                            <div class="analysis-tags">
-                                ${getCareer(dim, score).split('、').map(c => `<span class="tag">${c}</span>`).join('')}
-                            </div>
+                        <div class="analysis-detail-section">
+                            <div class="analysis-detail-title">💼 职业建议</div>
+                            <div class="analysis-detail-content">${getCareer(dim, score)}</div>
                         </div>
                         
-                        <div class="analysis-section">
-                            <div class="analysis-title">💕 婚恋洞察</div>
-                            <div class="analysis-content">${getLove(dim, score)}</div>
+                        <div class="analysis-detail-section">
+                            <div class="analysis-detail-title">💕 婚恋洞察</div>
+                            <div class="analysis-detail-content">${getLove(dim, score)}</div>
                         </div>
                     </div>
                 `;
             });
+            
+            // 增强版分析内容
+            html += generateEnhancedAnalysis(scores);
             
             html += `
                 <div class="action-buttons">
@@ -1088,6 +1407,241 @@
             
             document.getElementById('resultsContainer').innerHTML = html;
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // 生成增强版分析内容
+        function generateEnhancedAnalysis(scores) {
+            const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+            const topDims = sorted.slice(0, 2).map(e => e[0]);
+            const bottomDims = sorted.slice(-2).map(e => e[0]);
+            
+            let html = '';
+            
+            // 人生建议
+            const lifeAdvice = [];
+            topDims.forEach(dim => {
+                const score = scores[dim];
+                const level = score >= 60 ? 'high' : 'low';
+                if (ANALYSIS_CONTENT.lifeAdvice[dim] && ANALYSIS_CONTENT.lifeAdvice[dim][level]) {
+                    lifeAdvice.push({
+                        dim: DIMENSION_INFO[dim].name,
+                        content: ANALYSIS_CONTENT.lifeAdvice[dim][level]
+                    });
+                }
+            });
+            
+            if (lifeAdvice.length > 0) {
+                html += `
+                    <div class="analysis-section-title">💡 人生建议</div>
+                    <div class="enhanced-analysis-section fade-in">
+                        ${lifeAdvice.map(advice => `
+                            <div class="advice-card">
+                                <div class="advice-dimension">${advice.dim}</div>
+                                <div class="advice-content">${advice.content}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            // 学习风格
+            const learningStyles = [];
+            Object.keys(scores).forEach(dim => {
+                const score = scores[dim];
+                if (score >= 60 || score <= 40) {
+                    const level = score >= 60 ? 'high' : 'low';
+                    if (ANALYSIS_CONTENT.learningStyle[dim] && ANALYSIS_CONTENT.learningStyle[dim][level]) {
+                        learningStyles.push(ANALYSIS_CONTENT.learningStyle[dim][level]);
+                    }
+                }
+            });
+            
+            if (learningStyles.length > 0) {
+                html += `
+                    <div class="analysis-section-title">📚 学习风格</div>
+                    <div class="enhanced-analysis-section fade-in">
+                        <div class="learning-style-card">
+                            ${learningStyles.slice(0, 3).map(style => `
+                                <div class="learning-style-item">${style}</div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            // 压力应对
+            const stressAdvice = [];
+            Object.keys(scores).forEach(dim => {
+                const score = scores[dim];
+                if (score >= 65 || score <= 35) {
+                    const level = score >= 65 ? 'high' : 'low';
+                    if (ANALYSIS_CONTENT.stressResponse[dim] && ANALYSIS_CONTENT.stressResponse[dim][level]) {
+                        stressAdvice.push({
+                            dim: DIMENSION_INFO[dim].name,
+                            content: ANALYSIS_CONTENT.stressResponse[dim][level]
+                        });
+                    }
+                }
+            });
+            
+            if (stressAdvice.length > 0) {
+                html += `
+                    <div class="analysis-section-title">🧘 压力应对</div>
+                    <div class="enhanced-analysis-section fade-in">
+                        ${stressAdvice.map(advice => `
+                            <div class="stress-card">
+                                <div class="stress-dimension">${advice.dim}</div>
+                                <div class="stress-content">${advice.content}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+            
+            return html;
+        }
+        
+        // 生成名人参考HTML
+        function getFamousPersonalityHTML(scores) {
+            const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+            const top1 = sorted[0][0];
+            const top2 = sorted[1][0];
+            const score1 = scores[top1];
+            const score2 = scores[top2];
+            
+            // 构建可能的键
+            const possibleKeys = [
+                `${top1}_high_${top2}_high`,
+                `${top2}_high_${top1}_high`,
+                `${top1}_high_${top2}_low`,
+                `${top1}_low_${top2}_high`
+            ];
+            
+            let personality = null;
+            for (const key of possibleKeys) {
+                if (ANALYSIS_CONTENT.famousPersonalities[key]) {
+                    personality = ANALYSIS_CONTENT.famousPersonalities[key];
+                    break;
+                }
+            }
+            
+            if (!personality) return '';
+            
+            return `
+                <div class="famous-personality-card fade-in">
+                    <div class="famous-personality-icon">⭐</div>
+                    <div class="famous-personality-content">
+                        <div class="famous-personality-label">你的性格类型</div>
+                        <div class="famous-personality-name">${personality}</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // 生成雷达图SVG
+        function generateRadarChart(scores) {
+            const dims = ['O', 'C', 'E', 'A', 'N'];
+            const labels = ['Openness', 'Cons', 'Extraversion', 'Agreeableness', 'Neuroticism'];
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6'];
+            const size = 300;
+            const center = size / 2;
+            const radius = 100;
+            
+            let points = '';
+            const angleStep = (Math.PI * 2) / 5;
+            
+            dims.forEach((dim, i) => {
+                const angle = i * angleStep - Math.PI / 2;
+                const value = scores[dim] / 100;
+                const x = center + radius * value * Math.cos(angle);
+                const y = center + radius * value * Math.sin(angle);
+                points += `${x},${y} `;
+            });
+            
+            // 生成网格线
+            let gridLines = '';
+            for (let i = 1; i <= 4; i++) {
+                const r = (radius / 4) * i;
+                let gridPoints = '';
+                for (let j = 0; j < 5; j++) {
+                    const angle = j * angleStep - Math.PI / 2;
+                    const x = center + r * Math.cos(angle);
+                    const y = center + r * Math.sin(angle);
+                    gridPoints += `${x},${y} `;
+                }
+                gridLines += `<polygon points="${gridPoints}" fill="none" stroke="#e2e8f0" stroke-width="1"/>`;
+            }
+            
+            // 生成轴线
+            let axes = '';
+            for (let i = 0; i < 5; i++) {
+                const angle = i * angleStep - Math.PI / 2;
+                const x = center + radius * Math.cos(angle);
+                const y = center + radius * Math.sin(angle);
+                axes += `<line x1="${center}" y1="${center}" x2="${x}" y2="${y}" stroke="#e2e8f0" stroke-width="1"/>`;
+            }
+            
+            // 生成标签
+            let labelElements = '';
+            dims.forEach((dim, i) => {
+                const angle = i * angleStep - Math.PI / 2;
+                const x = center + (radius + 25) * Math.cos(angle);
+                const y = center + (radius + 25) * Math.sin(angle);
+                labelElements += `<text x="${x}" y="${y}" text-anchor="middle" dominant-baseline="middle" font-size="11" fill="#64748b" font-weight="500">${labels[i]}</text>`;
+            });
+            
+            return `
+                <svg id="radarChart" viewBox="0 0 ${size} ${size}">
+                    ${gridLines}
+                    ${axes}
+                    <polygon points="${points}" fill="rgba(99, 102, 241, 0.2)" stroke="#6366f1" stroke-width="2"/>
+                    ${labelElements}
+                </svg>
+            `;
+        }
+        
+        // 生成性格总结
+        function generateSummary(scores, highest, lowest) {
+            const highDesc = dimensionInfo[highest];
+            const lowDesc = dimensionInfo[lowest];
+            const highText = highDesc.descriptions ? highDesc.descriptions.high : highDesc.high;
+            return `你在<strong>${highDesc.name}</strong>方面表现突出，${highText}而在<strong>${lowDesc.name}</strong>方面相对较低。整体而言，你是一个具有独特个性的人，在生活和工作中能够发挥自身优势，同时也有成长空间。`;
+        }
+        
+        // 生成核心优势
+        function generateStrengths(scores, highest) {
+            const strengths = [];
+            const resultStrengths = ANALYSIS_CONTENT.resultStrengths;
+            
+            if (scores['O'] >= 60 && resultStrengths.O) strengths.push(resultStrengths.O);
+            if (scores['C'] >= 60 && resultStrengths.C) strengths.push(resultStrengths.C);
+            if (scores['E'] >= 60 && resultStrengths.E) strengths.push(resultStrengths.E);
+            if (scores['A'] >= 60 && resultStrengths.A) strengths.push(resultStrengths.A);
+            if (scores['N'] <= 40 && resultStrengths.N_low) strengths.push(resultStrengths.N_low);
+            
+            if (strengths.length === 0 && ANALYSIS_CONTENT.defaultStrengths) {
+                strengths.push(...ANALYSIS_CONTENT.defaultStrengths);
+            }
+            
+            return strengths.slice(0, 3).map(s => `<li>${s}</li>`).join('');
+        }
+        
+        // 生成潜在盲点
+        function generateWeaknesses(scores, lowest) {
+            const weaknesses = [];
+            const resultWeaknesses = ANALYSIS_CONTENT.resultWeaknesses;
+            
+            if (scores['O'] <= 40 && resultWeaknesses.O) weaknesses.push(resultWeaknesses.O);
+            if (scores['C'] <= 40 && resultWeaknesses.C) weaknesses.push(resultWeaknesses.C);
+            if (scores['E'] <= 40 && resultWeaknesses.E) weaknesses.push(resultWeaknesses.E);
+            if (scores['A'] <= 40 && resultWeaknesses.A) weaknesses.push(resultWeaknesses.A);
+            if (scores['N'] >= 60 && resultWeaknesses.N) weaknesses.push(resultWeaknesses.N);
+            
+            if (weaknesses.length === 0 && ANALYSIS_CONTENT.defaultWeaknesses) {
+                weaknesses.push(...ANALYSIS_CONTENT.defaultWeaknesses);
+            }
+            
+            return weaknesses.slice(0, 3).map(w => `<li>${w}</li>`).join('');
         }
 
         function retakeTest() {
