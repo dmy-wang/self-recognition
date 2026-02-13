@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>大五人格测试 | BFI-44</title>
-    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -1058,8 +1057,10 @@
         let answers = {};
 
         function init() {
-            loadHistory();
-            document.getElementById('welcomeContainer').style.display = 'block';
+            if (!loadSharedResult()) {
+                loadHistory();
+                document.getElementById('welcomeContainer').style.display = 'block';
+            }
         }
 
         function loadHistory() {
@@ -1415,7 +1416,8 @@
             html += `
                 <div class="action-buttons">
                     <button class="btn-outline" onclick="retakeTest()">重新测试</button>
-                    <button class="btn-outline" onclick="shareResults()">保存图片</button>
+                    <button class="btn-outline" onclick="copyResults()">复制结果</button>
+                    <button class="btn-outline" onclick="shareLink()">分享链接</button>
                 </div>
             `;
             
@@ -1658,60 +1660,80 @@
             return weaknesses.slice(0, 3).map(w => `<li>${w}</li>`).join('');
         }
 
-        function shareResults() {
-            const resultsContainer = document.getElementById('resultsContainer');
-            const captureEnd = document.getElementById('captureEnd');
-            const buttons = resultsContainer.querySelector('.action-buttons');
-            if (buttons) buttons.style.display = 'none';
+        function copyResults() {
+            const dims = ['E', 'A', 'C', 'N', 'O'];
+            const dimNames = { O: '开放性', C: '尽责性', E: '外向性', A: '宜人性', N: '神经质' };
+            const history = JSON.parse(localStorage.getItem('bfi44_history') || '[]');
+            const latest = history[0];
             
-            const captureDiv = document.createElement('div');
-            captureDiv.id = 'captureArea';
-            captureDiv.style.cssText = 'background: #ffffff; padding: 20px;';
+            if (!latest) {
+                alert('没有找到测试结果');
+                return;
+            }
             
-            const children = [];
-            let foundEnd = false;
-            resultsContainer.childNodes.forEach(child => {
-                if (child.id === 'captureEnd') {
-                    foundEnd = true;
-                }
-                if (!foundEnd && child.nodeType === 1) {
-                    children.push(child.cloneNode(true));
-                }
+            const scores = latest.scores;
+            const sorted = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+            const highest = sorted[0];
+            const lowest = sorted[sorted.length - 1];
+            
+            let text = '【大五人格测试结果】\n\n';
+            text += '📊 各维度得分：\n';
+            dims.forEach(dim => {
+                text += `  ${dimNames[dim]}：${scores[dim]}分\n`;
             });
-            children.forEach(child => captureDiv.appendChild(child));
-            resultsContainer.insertBefore(captureDiv, resultsContainer.firstChild);
+            text += `\n🏆 最突出特质：${dimNames[highest[0]]}（${highest[1]}分）\n`;
+            text += `📉 需关注特质：${dimNames[lowest[0]]}（${lowest[1]}分）\n`;
+            text += `\n📅 测试时间：${latest.date}\n`;
+            text += `\n🔗 测试链接：${window.location.href}`;
             
-            html2canvas(captureDiv, {
-                scale: 1.5,
-                useCORS: true,
-                backgroundColor: '#ffffff',
-                scrollX: 0,
-                scrollY: 0,
-                logging: false,
-                onclone: function(clonedDoc) {
-                    const clonedCapture = clonedDoc.getElementById('captureArea');
-                    if (clonedCapture) {
-                        clonedCapture.style.background = '#ffffff';
-                        const textElements = clonedCapture.querySelectorAll('.dimension-desc, .analysis-detail-content, .advice-content, .summary-card-main p, .analysis-card-content, .dimension-percentile');
-                        textElements.forEach(el => {
-                            el.style.color = '#1e293b';
-                        });
-                    }
-                }
-            }).then(canvas => {
-                resultsContainer.removeChild(captureDiv);
-                if (buttons) buttons.style.display = 'flex';
-                
-                const link = document.createElement('a');
-                link.download = '大五人格测试结果_' + new Date().toLocaleDateString('zh-CN').replace(/\//g, '-') + '.png';
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            }).catch(err => {
-                if (captureDiv.parentNode) resultsContainer.removeChild(captureDiv);
-                if (buttons) buttons.style.display = 'flex';
-                alert('保存图片失败，请尝试截图保存');
-                console.error(err);
+            navigator.clipboard.writeText(text).then(() => {
+                alert('结果已复制到剪贴板！\n可粘贴到微信、QQ等分享给朋友');
+            }).catch(() => {
+                const textarea = document.createElement('textarea');
+                textarea.value = text;
+                document.body.appendChild(textarea);
+                textarea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textarea);
+                alert('结果已复制到剪贴板！');
             });
+        }
+
+        function shareLink() {
+            const history = JSON.parse(localStorage.getItem('bfi44_history') || '[]');
+            const latest = history[0];
+            
+            if (!latest) {
+                alert('没有找到测试结果');
+                return;
+            }
+            
+            const scores = latest.scores;
+            const encoded = btoa(JSON.stringify(scores));
+            const shareUrl = window.location.origin + window.location.pathname + '?r=' + encoded;
+            
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                alert('分享链接已复制！\n发送给朋友即可查看你的测试结果');
+            }).catch(() => {
+                prompt('请复制以下链接分享给朋友：', shareUrl);
+            });
+        }
+
+        function loadSharedResult() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const encoded = urlParams.get('r');
+            
+            if (encoded) {
+                try {
+                    const scores = JSON.parse(atob(encoded));
+                    const date = '分享的结果';
+                    showResults(scores, date);
+                    return true;
+                } catch (e) {
+                    console.error('无法解析分享结果');
+                }
+            }
+            return false;
         }
 
         function retakeTest() {
